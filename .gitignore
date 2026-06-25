@@ -11,6 +11,11 @@ out/
 *-poster.png
 *-palette.png
 
+# ...but DO commit the curated showcase media under examples/
+!examples/**/*.gif
+!examples/**/*.mp4
+!examples/**/*-poster.png
+
 # Vendored libs are fetched per-project, not committed here
 vendor/
 

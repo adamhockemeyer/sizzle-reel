@@ -1,0 +1,28 @@
+{
+  "name": "sizzle-reel",
+  "version": "1.0.0",
+  "description": "GitHub Copilot CLI / Agent Skills skill for producing cinematic, deterministic animated sizzle-reel videos (three.js + GSAP + Playwright + ffmpeg) for project READMEs.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "author": "Adam Hockemeyer",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "smoke": "node scripts/smoke.mjs",
+    "capture": "node scripts/capture.mjs",
+    "encode": "node scripts/encode.mjs"
+  },
+  "keywords": [
+    "agent-skill",
+    "copilot-cli",
+    "claude-code",
+    "sizzle-reel",
+    "three.js",
+    "gsap",
+    "playwright",
+    "ffmpeg",
+    "readme-video"
+  ]
+}
