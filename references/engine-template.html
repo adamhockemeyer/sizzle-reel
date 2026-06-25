@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sizzle Reel — template</title>
+<!--
+  Minimal, runnable sizzle-reel scaffold: a three.js particle/graph backdrop driven
+  by a PAUSED GSAP timeline via a deterministic seek harness, plus two sample scenes.
+
+  Replace the SCENES section with your own beats (see references/scene-playbook.md). The particle/
+  knowledge-graph backdrop here is ONE example flavor (fits a graph/RAG/data product) — swap it for
+  whatever suits yours. The reusable parts are the SEEK HARNESS + state-object pattern, not this backdrop.
+  Vendor three.module.min.js (+ three.core.min.js) + gsap.min.js into ./vendor (look up current versions:
+    npm view three version ; npm view gsap version
+  copy from node_modules: three/build/*.min.js and gsap/dist/gsap.min.js). No CDN — keep capture offline.
+
+  Capture: node scripts/capture.mjs --dir <thisFolder>
+  Smoke:   node scripts/smoke.mjs   --dir <thisFolder>
+  Encode:  node scripts/encode.mjs --frames <thisFolder>/frames --out <out> --name my-reel
+-->
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #03050c; overflow: hidden;
+    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; color: #eaf2ff; }
+  #stage { position: fixed; inset: 0; }
+  #gl { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #scrim { position: absolute; inset: 0; background: rgba(3,5,12,0); pointer-events: none; }
+  /* letterbox bars (animated via fx.bars) */
+  #bar-top, #bar-bot { position: absolute; left: 0; right: 0; height: 0; background: #03050c; z-index: 40; }
+  #bar-top { top: 0; } #bar-bot { bottom: 0; }
+  .scene { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+
+  /* ---- Title scene ---- */
+  #s-title { display: grid; place-content: center; text-align: center; }
+  #s-title .kicker { opacity: 0; transform: translateY(12px); letter-spacing: .32em;
+    text-transform: uppercase; font-size: 13px; color: #7dd3fc; }
+  #s-title h1 { opacity: 0; margin: 14px 0 0; font-size: 64px; font-weight: 800;
+    letter-spacing: .12em; }
+  #s-title .sub { opacity: 0; transform: translateY(12px); margin-top: 14px; font-size: 20px; color: #aac4e6; }
+
+  /* ---- Capability scene (graph-forward) ---- */
+  #s-cap [data-tag] { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); opacity: 0;
+    font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: #22d3ee; }
+  /* bottom caption: keep >= 74px off the frame bottom (see gotchas.md) */
+  .lowcap { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); opacity: 0;
+    font-size: 22px; font-weight: 600; text-align: center; max-width: 70vw; }
+  #s-cap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <div id="scrim"></div>
+
+  <div class="scene" id="s-title">
+    <div class="kicker">Your Kicker</div>
+    <h1>PRODUCT NAME</h1>
+    <div class="sub">One-line promise that says what it does.</div>
+  </div>
+
+  <div class="scene" id="s-cap">
+    <span data-tag>Signature Capability</span>
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <circle id="orig" cx="800" cy="300" r="0" fill="#7dd3fc" opacity="0" />
+      <line id="beam" x1="800" y1="300" x2="800" y2="560" stroke="#22d3ee" stroke-width="3"
+            stroke-dasharray="260" stroke-dashoffset="260" opacity="0" />
+      <circle id="ring" cx="800" cy="560" r="46" fill="none" stroke="#8b5cf6" stroke-width="4" opacity="0" />
+    </svg>
+    <div class="lowcap" id="cap1">A plain-English outcome line for this beat.</div>
+  </div>
+
+  <div id="bar-top"></div>
+  <div id="bar-bot"></div>
+</div>
+
+<script src="./vendor/gsap.min.js"></script>
+<script type="module">
+import * as THREE from "./vendor/three.module.min.js";
+
+const DURATION = 14.0;                                   // seconds — set to your reel length
+const CAPTURE = new URLSearchParams(location.search).has("capture");
+
+/* ============ WebGL particle/graph backdrop ============ */
+const canvas = document.getElementById("gl");
+// preserveDrawingBuffer:true is REQUIRED or headless screenshots come out black.
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setClearColor(0x000000, 0);
+const W = () => window.innerWidth, H = () => window.innerHeight;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(W(), H());
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x05070f, 0.045);
+const camera = new THREE.PerspectiveCamera(50, W() / H(), 0.1, 100);
+
+function dotTexture() {
+  const s = 128, c = document.createElement("canvas"); c.width = c.height = s;
+  const ctx = c.getContext("2d"), g = ctx.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
+  g.addColorStop(0,"rgba(255,255,255,1)"); g.addColorStop(0.3,"rgba(255,255,255,0.8)");
+  g.addColorStop(1,"rgba(255,255,255,0)"); ctx.fillStyle = g; ctx.fillRect(0,0,s,s);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const tex = dotTexture();
+
+// clustered nodes
+const NODE_COUNT = 260, nodes = [], CLUSTERS = 7, clusters = [];
+const cyan = new THREE.Color(0x22d3ee), violet = new THREE.Color(0x8b5cf6), sky = new THREE.Color(0x7dd3fc);
+for (let i=0;i<CLUSTERS;i++){ const u=Math.random(),v=Math.random(),th=2*Math.PI*u,ph=Math.acos(2*v-1),r=3.6+Math.random()*1.4;
+  clusters.push(new THREE.Vector3(r*Math.sin(ph)*Math.cos(th), r*Math.sin(ph)*Math.sin(th)*0.7, r*Math.cos(ph))); }
+for (let i=0;i<NODE_COUNT;i++){ const cl=clusters[(Math.random()*CLUSTERS)|0], sp=1.5+Math.random()*1.2;
+  const p=new THREE.Vector3(cl.x+(Math.random()-0.5)*sp*2, cl.y+(Math.random()-0.5)*sp*2, cl.z+(Math.random()-0.5)*sp*2);
+  const col=cyan.clone().lerp(violet, Math.random()*0.6); if (Math.random()<0.18) col.lerp(sky,0.5);
+  nodes.push({ p, col, size: (Math.random()<0.14 ? 34 : 12) + Math.random()*14, seed: i/NODE_COUNT }); }
+
+const positions=new Float32Array(NODE_COUNT*3),colors=new Float32Array(NODE_COUNT*3),sizes=new Float32Array(NODE_COUNT),seeds=new Float32Array(NODE_COUNT);
+nodes.forEach((n,i)=>{ positions.set([n.p.x,n.p.y,n.p.z],i*3); colors.set([n.col.r,n.col.g,n.col.b],i*3); sizes[i]=n.size; seeds[i]=n.seed; });
+const geo=new THREE.BufferGeometry();
+geo.setAttribute("position",new THREE.BufferAttribute(positions,3));
+geo.setAttribute("aColor",new THREE.BufferAttribute(colors,3));
+geo.setAttribute("aSize",new THREE.BufferAttribute(sizes,1));
+geo.setAttribute("aSeed",new THREE.BufferAttribute(seeds,1));
+const pointsMat=new THREE.ShaderMaterial({
+  uniforms:{ uTime:{value:0}, uForm:{value:0}, uTex:{value:tex}, uPR:{value:renderer.getPixelRatio()}, uDim:{value:1} },
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  vertexShader:`attribute vec3 aColor;attribute float aSize;attribute float aSeed;
+    uniform float uTime;uniform float uForm;uniform float uPR;varying vec3 vColor;varying float vForm;
+    void main(){vColor=aColor;float local=smoothstep(aSeed*0.55,aSeed*0.55+0.45,uForm);vForm=local;
+    float pulse=1.0+0.18*sin(uTime*1.8+aSeed*28.0);vec4 mv=modelViewMatrix*vec4(position,1.0);
+    gl_PointSize=aSize*local*pulse*uPR*(12.0/-mv.z);gl_Position=projectionMatrix*mv;}`,
+  fragmentShader:`uniform sampler2D uTex;uniform float uDim;varying vec3 vColor;varying float vForm;
+    void main(){float a=texture2D(uTex,gl_PointCoord).a;if(a<0.01)discard;gl_FragColor=vec4(vColor,a*vForm*uDim);}`,
+});
+const points=new THREE.Points(geo,pointsMat);
+
+// k-nearest edges
+const edgePos=[],edgeCol=[],K=2;
+for(let i=0;i<NODE_COUNT;i++){const a=nodes[i].p,ds=[];for(let j=0;j<NODE_COUNT;j++){if(i!==j)ds.push([a.distanceTo(nodes[j].p),j]);}
+  ds.sort((x,y)=>x[0]-y[0]);for(let k=0;k<K;k++){const j=ds[k][1];if(j<i||ds[k][0]>3.2)continue;const b=nodes[j].p;
+  edgePos.push(a.x,a.y,a.z,b.x,b.y,b.z);const ca=nodes[i].col,cb=nodes[j].col;edgeCol.push(ca.r,ca.g,ca.b,cb.r,cb.g,cb.b);}}
+const edgeGeo=new THREE.BufferGeometry();
+edgeGeo.setAttribute("position",new THREE.BufferAttribute(new Float32Array(edgePos),3));
+edgeGeo.setAttribute("color",new THREE.BufferAttribute(new Float32Array(edgeCol),3));
+const edgeMat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+const graph=new THREE.Group(); graph.add(new THREE.LineSegments(edgeGeo,edgeMat)); graph.add(points); scene.add(graph);
+
+const STAR=600,starPos=new Float32Array(STAR*3);
+for(let i=0;i<STAR;i++){starPos.set([(Math.random()-0.5)*70,(Math.random()-0.5)*50,-10-Math.random()*40],i*3);}
+const starGeo=new THREE.BufferGeometry(); starGeo.setAttribute("position",new THREE.BufferAttribute(starPos,3));
+const stars=new THREE.Points(starGeo,new THREE.PointsMaterial({color:0x6f86c4,size:0.06,transparent:true,opacity:0.5,blending:THREE.AdditiveBlending,depthWrite:false,map:tex}));
+scene.add(stars);
+
+/* ============ PAUSED GSAP timeline + animated state objects ============ */
+const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+const camState = { z:15, x:0, y:0, gy:0 };
+const fx = { form:0, edgeGlow:0, bars:0, dim:1, scrim:0 };
+
+/* ============ SCENES (replace with your own beats) ============ */
+// --- TITLE (0 -> ~5) : panel-ish, backdrop forms in ---
+tl.to(fx,{form:1,duration:2.6,ease:"power2.out"},0.2);
+tl.to(fx,{bars:1,duration:1.0},0);
+tl.to(camState,{z:9.5,duration:3.4,ease:"power1.inOut"},0);
+tl.to("#s-title .kicker",{opacity:1,y:0,duration:1.0},0.4);
+tl.to("#s-title h1",{opacity:1,duration:1.3},0.7);
+tl.fromTo("#s-title h1",{letterSpacing:"0.34em"},{letterSpacing:"0.12em",duration:1.6},0.7);
+tl.to("#s-title .sub",{opacity:1,y:0,duration:1.1},1.4);
+tl.to("#s-title",{opacity:0,duration:0.6,ease:"power2.in"},4.4);
+
+// --- CAPABILITY (5 -> 14) : graph-forward, dramatize the mechanism ---
+const C = 5.0;
+tl.to(fx,{edgeGlow:0.9,duration:1.4,ease:"power2.out"},C);
+tl.to(camState,{z:10.5,gy:0.6,duration:8,ease:"power1.inOut"},C);
+tl.to("#s-cap [data-tag]",{opacity:1,duration:0.5},C+0.3);
+tl.to("#cap1",{opacity:1,y:0,duration:0.6},C+0.6);
+// a query collapses to a point of light, fires a beam into the graph, forms a ring
+tl.fromTo("#orig",{attr:{r:0},opacity:0},{attr:{r:16},opacity:0.95,duration:0.3,ease:"power2.out"},C+1.6);
+tl.to("#orig",{attr:{r:30},opacity:0,duration:0.5,ease:"power2.in"},C+1.9);
+// stroke-dasharray==line length, so dashoffset:length hides it; animate offset->0 to "draw" it
+tl.fromTo("#beam",{strokeDashoffset:260,opacity:1},{strokeDashoffset:0,duration:0.6,ease:"power2.out"},C+1.9);
+// svgOrigin (user-space coords), NOT transformOrigin, for SVG rotation
+tl.fromTo("#ring",{opacity:0,scale:0.4,attr:{r:46}},{opacity:1,scale:1,duration:0.6,ease:"back.out(1.8)",svgOrigin:"800 560"},C+2.5);
+tl.fromTo("#ring",{rotation:0},{rotation:360,duration:5,ease:"none",svgOrigin:"800 560"},C+2.6);
+tl.to(["#s-cap","#cap1","#beam","#ring"],{opacity:0,duration:0.6,ease:"power2.in"},DURATION-1.0);
+
+/* ============ render — everything derives from the state objects ============ */
+const scrimEl = document.getElementById("scrim");
+const barT = document.getElementById("bar-top"), barB = document.getElementById("bar-bot");
+function applyState(t){
+  camera.position.set(camState.x,camState.y,camState.z);
+  camera.lookAt(0,0,0);
+  graph.rotation.y = camState.gy + t*0.05;
+  graph.rotation.x = Math.sin(t*0.25)*0.05;
+  stars.rotation.y = t*0.01;
+  pointsMat.uniforms.uTime.value = t;
+  pointsMat.uniforms.uForm.value = fx.form;
+  pointsMat.uniforms.uDim.value = fx.dim;
+  edgeMat.opacity = (0.10 + fx.edgeGlow*0.55) * fx.dim;
+  scrimEl.style.background = `rgba(3,5,12,${fx.scrim})`;
+  const bh = fx.bars*60; barT.style.height = bh+"px"; barB.style.height = bh+"px";
+  renderer.render(scene,camera);
+}
+
+/* ============ deterministic seek harness (capture/smoke depend on this) ============ */
+window.__seek = (ms) => { const t = Math.min(Math.max(ms/1000,0),DURATION); tl.time(t); applyState(t); };
+window.__duration = DURATION;
+window.__ready = false;
+
+window.addEventListener("resize",()=>{ renderer.setSize(W(),H()); camera.aspect=W()/H(); camera.updateProjectionMatrix(); });
+
+// If you load <img class="shot"> screenshots, wait for them to decode before ready.
+const shots = [...document.querySelectorAll(".shot")];
+Promise.all(shots.map(img => (img.complete && img.naturalWidth) ? Promise.resolve()
+  : new Promise(res => { img.onload = res; img.onerror = res; })))
+  .then(()=>{ window.__seek(0); requestAnimationFrame(()=>{ window.__ready = true; }); });
+
+// Live preview ONLY when not capturing (capture steps the clock itself).
+if (!CAPTURE) {
+  const start = performance.now();
+  (function loop(){ const t = ((performance.now()-start)/1000) % DURATION; window.__seek(t*1000); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>

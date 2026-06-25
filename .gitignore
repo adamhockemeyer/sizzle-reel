@@ -1,0 +1,21 @@
+# Node / npm
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# Skill output artifacts (generated when running the pipeline, not part of the skill)
+frames/
+out/
+*.mp4
+*.gif
+*-poster.png
+*-palette.png
+
+# Vendored libs are fetched per-project, not committed here
+vendor/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
