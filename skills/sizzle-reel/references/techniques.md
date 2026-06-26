@@ -76,6 +76,15 @@ Only the *sourcing* of the assets differs (native capture tools instead of Playw
   bar, high-res output, no real PII, and you can seed demo data. Screenshot or screen-record the simulator;
   optionally composite inside a device-bezel mockup PNG instead of the flat `.frame`.
 
+- **No UI at all (library / API / protocol / framework).** There's nothing to screenshot — so *assemble*
+  the interface from primitives. Build the "product" out of: real **code panels** (the actual API calls,
+  refreshed from current docs so they compile — see gotchas), a simulated **live chat** (#3) if the thing
+  produces a conversation, **provider/interop nodes** (use real icons — `references/assets.md`), and an
+  animated **graph of the artifact the library builds** (a multi-agent workflow, a data pipeline, a
+  dependency graph). Make that built-artifact graph a hero beat with mechanism motion (#4) — it's the
+  closest thing to "showing the product." This is exactly how the Microsoft Agent Framework reel was
+  built (no app, yet it reads as a real system).
+
 **Embedding a clip seek-safely.** If you bring in a `<video>` (from a screen recording or VHS MP4) rather
 than stills, keep determinism: drive playback from the timeline instead of letting it free-run —
 `video.currentTime = clamp((t - clipStartMs) / 1000, 0, video.duration)` inside `applyState(t)` — and have
@@ -116,6 +125,14 @@ The most engaging beat in our reel. Simulate a live conversation deterministical
 
 This beat tells the product story better than any screenshot — invest the most time here.
 
+**Variant — agentic chat (tool calls + human handoff).** For an *agent* product, a plain Q&A→citation
+undersells it. Show the agent *working*: after the user bubble, reveal **tool-call chips** that run and
+resolve (`policy_lookup` → ✓ result, `fraud_check` → ✓ result — a label, a spinner-to-check, a one-line
+result), *then* stream the answer. For human-in-the-loop, end on a distinct **handoff chip** in an accent
+color (`→ handoff: Adjuster · human approval`). This reads as a real autonomous agent with guardrails, not
+a chatbot — and it pairs naturally with a workflow-graph hero beat (#4) showing the same handoff node.
+(All still seek-safe: drive chip reveals/spinners from `t`, never `repeat:-1`.)
+
 ## 4. Dramatize the mechanism (not just the result)
 
 Make the *invisible* thing visible. Examples that landed well:
@@ -139,9 +156,17 @@ object: panel = `dim↓, scrim↑`; graph-forward = `dim=1, edgeGlow↑`, plus a
 Never leave the camera static. A slow continuous dolly/orbit (tween `camState.z`/`gy`) under everything
 gives parallax and life. Push **in** for intimacy (chat/answer), pull **out** for the close/CTA.
 
----
+## 7. Real product icons (not labelled boxes)
 
-## Motion principles (timing cheat-sheet)
+When a beat names concrete products — model providers, cloud services, a protocol, an integrations
+strip, an auth/deploy target — swap placeholder shapes for the vendors' **official icons** (with a short
+text label beside each). It's the cheapest single jump from "generic mockup" to "polished," and it works
+for **any** reel: an assembled no-UI reel (#1), *and* a real-UI reel that wants a recognizable "works
+with…" beat. Keep the SVGs local to the reel, set both `href`/`xlink:href` on `<image>`, and pick the
+light-vs-dark logo variant that's visible on your backdrop. Be conservative with **competitor** logos —
+render rivals as plain text wordmarks. Full sourcing + trademark guidance in `references/assets.md`.
+
+---
 
 Distilled from Material & Apple HIG motion guidance + 2025 software-demo practice. Defaults, not laws:
 

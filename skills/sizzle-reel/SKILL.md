@@ -117,10 +117,13 @@ Windows `winget install Gyan.FFmpeg`; macOS `brew install ffmpeg`; Linux `apt in
    `references/backdrops.md`) — swap the template's graph block for a fitting motif/palette if it doesn't
    match. The harness + seek contract stay; only the backdrop visuals change.
 2. **Author scenes.** Design 4–6 beats on the timeline. Use `references/scene-playbook.md` for the
-   proven structure (Title → Differentiator → Ask/Chat → Core-capability → Interfaces → Close) and the
-   panel-vs-graph-forward mode pattern, and `references/techniques.md` for the signature *moves* (real
-   screenshots in 3D frames, sequential panel-by-panel reveal, animated chat, mechanism dramatization).
-   Animate the *actual differentiator* — and ground it in real product screenshots.
+   proven structure (Title → Differentiator → Ask/Chat → Core-capability → Interfaces → Close), the
+   panel-vs-graph-forward mode pattern, and the *ground-in-a-real-scenario / close-on-the-action*
+   principle. Use `references/techniques.md` for the signature *moves* (real screenshots in 3D frames,
+   sequential panel-by-panel reveal, animated chat, mechanism dramatization, real product icons) — and
+   `references/assets.md` when a beat names real products (use official icons, mind trademarks). Animate
+   the *actual differentiator* — and ground it in real product screenshots, or, for a subject with **no
+   UI** (a library/API/protocol), *assemble* the interface from code panels + chat + an artifact graph.
 3. **Smoke-test (fast, ~90s).** `node scripts/smoke.mjs` seeks ~15–20 timestamps, screenshots each, and
    fails on any console/page error. Iterate here — do NOT full-capture to check a tweak.
 4. **Measure positions** when adjusting layout (caption clipping, overlaps) by reading
