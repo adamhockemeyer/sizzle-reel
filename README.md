@@ -110,6 +110,7 @@ Real reels produced by this skill. Each folder has the **prompt** used and the *
 | Example | Subject | Prompt → result |
 | --- | --- | --- |
 | [`context-engine`](examples/context-engine/) | A graph/RAG "context engine" | Neural-graph backdrop, 5 scenes, panel-by-panel reveal of dashboard / schema / graph / streamed answer |
+| [`microsoft-agent-framework`](examples/microsoft-agent-framework/) | An open-source framework (**no UI**) | Assembled "interface": real Python/.NET code, model + interop nodes, animated multi-agent workflow graph — Azure palette |
 
 > More examples coming. Built a good one? PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 

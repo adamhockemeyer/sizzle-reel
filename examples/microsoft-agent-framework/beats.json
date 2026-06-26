@@ -1,0 +1,14 @@
+[
+  ["01-title", 2600],
+  ["02-title-full", 4300],
+  ["03-code-py", 6400],
+  ["04-code-both", 7600],
+  ["05-code-answer", 9800],
+  ["06-model-chips", 16000],
+  ["07-model-swap", 18400],
+  ["08-interop", 23200],
+  ["09-flow-fanout", 31200],
+  ["10-flow-full", 35200],
+  ["11-prod-otel", 40400],
+  ["12-outro", 45600]
+]

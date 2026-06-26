@@ -24,7 +24,7 @@ The skill responds to natural language — you don't need to phrase it exactly l
 
 - **Chose the backdrop from the product**, not a default — a graph motif because the product *is* a
   graph engine. (For a different product it would pick a different backdrop; see
-  [`references/backdrops.md`](../../references/backdrops.md).)
+  [`references/backdrops.md`](../../skills/sizzle-reel/references/backdrops.md).)
 - **Grounded every scene in real screenshots** captured once into `screens/`, composited into 3D
   frames — never a live, mid-auth app screen.
 - **Animated the differentiator** (graph + streamed answer), not generic UI chrome.

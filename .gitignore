@@ -21,6 +21,9 @@ out/
 # Vendored libs are fetched per-project, not committed here
 vendor/
 
+# Smoke-test inspection screenshots are QA artifacts, not showcase media
+smoke/
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db
