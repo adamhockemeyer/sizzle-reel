@@ -69,9 +69,9 @@ Each agent auto-discovers skill folders in its own directory:
 ```bash
 git clone https://github.com/adamhockemeyer/sizzle-reel.git
 # Windows (Copilot CLI):
-xcopy /E /I sizzle-reel "%USERPROFILE%\.copilot\skills\sizzle-reel"
+xcopy /E /I sizzle-reel\skills\sizzle-reel "%USERPROFILE%\.copilot\skills\sizzle-reel"
 # macOS / Linux (Copilot CLI):
-cp -r sizzle-reel ~/.copilot/skills/sizzle-reel
+cp -r sizzle-reel/skills/sizzle-reel ~/.copilot/skills/sizzle-reel
 # Claude Code: copy to ~/.claude/skills/sizzle-reel instead
 ```
 
@@ -131,7 +131,7 @@ references/engine-template.html      <- copy into your project, swap in product-
   README.md  <- ![demo](.../reel.gif) inline; link or drag-drop the .mp4 for autoplay
 ```
 
-See [`SKILL.md`](SKILL.md) for the full contract and workflow.
+See [`skills/sizzle-reel/SKILL.md`](skills/sizzle-reel/SKILL.md) for the full contract and workflow.
 
 ## Requirements
 
@@ -143,6 +143,9 @@ If you'd rather use a system ffmpeg, one on your `PATH` (winget / brew / apt) al
 auto-detects it and verifies it has `libx264`.
 
 ## What's inside
+
+The installable skill lives in [`skills/sizzle-reel/`](skills/sizzle-reel/); the repo root holds
+docs and showcase media (which never ship into your install). Paths below are relative to the skill folder.
 
 | Path | What it is |
 | --- | --- |

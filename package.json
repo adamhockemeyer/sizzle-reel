@@ -10,9 +10,9 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "smoke": "node scripts/smoke.mjs",
-    "capture": "node scripts/capture.mjs",
-    "encode": "node scripts/encode.mjs"
+    "smoke": "node skills/sizzle-reel/scripts/smoke.mjs",
+    "capture": "node skills/sizzle-reel/scripts/capture.mjs",
+    "encode": "node skills/sizzle-reel/scripts/encode.mjs"
   },
   "keywords": [
     "agent-skill",

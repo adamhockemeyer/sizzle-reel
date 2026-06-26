@@ -3,7 +3,7 @@ node_modules/
 package-lock.json
 npm-debug.log*
 
-# Skill output artifacts (generated when running the pipeline, not part of the skill)
+# Skill output artifacts (generated when running the pipeline, not part of the skill).
 frames/
 out/
 *.mp4
@@ -11,9 +11,11 @@ out/
 *-poster.png
 *-palette.png
 
-# ...but DO commit the curated showcase media under examples/
-!examples/**/*.gif
+# ...but the curated example reels under examples/ ARE committed (showcase media).
+# They live at the repo root and are never shipped into a user's skill install
+# (only skills/sizzle-reel/ is installed by `npx skills add` / a manual copy).
 !examples/**/*.mp4
+!examples/**/*.gif
 !examples/**/*-poster.png
 
 # Vendored libs are fetched per-project, not committed here
