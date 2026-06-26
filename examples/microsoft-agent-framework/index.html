@@ -77,6 +77,47 @@
   .ga { position: absolute; opacity: 0; left: 50%; top: 150px; transform: translateX(-50%);
     padding: 8px 18px; border-radius: 999px; font-size: 15px; font-weight: 700; letter-spacing: .12em;
     color: #07101e; background: linear-gradient(90deg,#6fd0ff,#9fb8ff); box-shadow: 0 0 40px -8px rgba(110,200,255,.7); }
+
+  /* ---- Chat centerpiece (claims triage) ---- */
+  #s-chat { }
+  .chat { position: absolute; left: 360px; top: 150px; width: 880px; border-radius: 20px; opacity: 0;
+    background: linear-gradient(180deg, rgba(16,24,46,.97), rgba(9,14,30,.98));
+    border: 1px solid rgba(120,170,255,.24);
+    box-shadow: 0 50px 110px -34px rgba(0,0,0,.92), 0 0 70px -22px rgba(70,140,255,.4); padding: 22px 26px 26px; }
+  .chat .chead { display: flex; align-items: center; gap: 10px; padding-bottom: 14px; margin-bottom: 6px;
+    border-bottom: 1px solid rgba(120,170,255,.14); }
+  .chat .chead .av { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg,#4aa8ff,#7c6cff);
+    display: grid; place-content: center; font-size: 16px; }
+  .chat .chead .nm { font-size: 16px; font-weight: 700; color: #cfe2ff; }
+  .chat .chead .st { margin-left: auto; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #6fd0ff; font-weight: 700; }
+  .msg { opacity: 0; margin: 14px 0; font-size: 21px; line-height: 1.5; }
+  .msg.user { text-align: right; }
+  .msg.user .bub { display: inline-block; text-align: left; max-width: 620px; padding: 13px 18px; border-radius: 16px 16px 4px 16px;
+    background: linear-gradient(180deg, rgba(74,168,255,.20), rgba(74,168,255,.12)); border: 1px solid rgba(120,180,255,.32); color: #eaf4ff; }
+  .msg.bot .bub { display: inline-block; max-width: 700px; padding: 13px 18px; border-radius: 4px 16px 16px 16px;
+    background: rgba(255,255,255,.035); border: 1px solid rgba(120,170,255,.20); color: #eaf6ff; }
+  .msg.bot .bub .w { opacity: 0; }
+  .tool { opacity: 0; display: flex; align-items: center; gap: 12px; margin: 10px 0; font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+  .tool .call { font-size: 17px; color: #9fd0ff; background: rgba(58,208,232,.10); border: 1px solid rgba(58,208,232,.34);
+    padding: 8px 13px; border-radius: 10px; white-space: nowrap; }
+  .tool .call .fn { color: #ffd479; }
+  .tool .arrow { color: #5a6f93; font-size: 16px; }
+  .tool .res { opacity: 0; font-size: 16px; color: #b5e8a0; background: rgba(120,220,140,.08); border: 1px solid rgba(140,230,160,.30);
+    padding: 8px 13px; border-radius: 10px; white-space: nowrap; }
+  .tool .res.evt { color: #9fd0ff; background: rgba(124,108,255,.10); border-color: rgba(124,108,255,.34); }
+  .handoff { opacity: 0; margin-top: 16px; display: inline-flex; align-items: center; gap: 9px; padding: 9px 16px; border-radius: 999px;
+    font-size: 16px; font-weight: 700; color: #ffe0a8; background: rgba(255,196,92,.10); border: 1px solid rgba(255,196,92,.42); }
+
+  /* ---- icon images inside chips ---- */
+  .chipico { }
+  .wordmark { fill: #cfe2ff; font-family: "Segoe UI", sans-serif; font-weight: 700; text-anchor: middle; letter-spacing: .02em; }
+
+  /* ---- install CTA (outro) ---- */
+  #s-out .cta { opacity: 0; margin-top: 30px; display: flex; gap: 18px; justify-content: center; }
+  #s-out .cmd { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 18px; color: #d7e6ff;
+    background: rgba(16,24,46,.9); border: 1px solid rgba(120,170,255,.28); border-radius: 12px; padding: 12px 18px; }
+  #s-out .cmd .p { color: #6fd0ff; }
+  #s-out .links2 { opacity: 0; margin-top: 22px; font-size: 15px; color: #7f9bc4; letter-spacing: .02em; font-family: ui-monospace, Consolas, monospace; }
 </style>
 </head>
 <body>
@@ -95,42 +136,59 @@
   <div class="scene" id="s-title">
     <div class="kicker">Open · Multi-language · Production-ready</div>
     <h1>Microsoft Agent Framework</h1>
-    <div class="sub">Build production-grade AI agents &amp; multi-agent workflows — in .NET and Python.</div>
+    <div class="sub">From a single prompt to production multi-agent systems — in .NET and Python.</div>
   </div>
 
   <!-- 2 AGENT / CODE -->
   <div class="scene" id="s-code">
     <span class="tag">One Agent · two languages</span>
-    <div class="panel" id="pnl-py" style="left:120px; top:214px; width:620px;">
+    <div class="panel" id="pnl-py" style="left:120px; top:248px; width:620px;">
       <div class="topbar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="lang">Python</span></div>
 <pre><span class="k">from</span> agent_framework <span class="k">import</span> Agent
 
 agent = <span class="f">Agent</span>(
     client=<span class="f">FoundryChatClient</span>(),
-    name=<span class="s">"Concierge"</span>,
-    instructions=<span class="s">"Plan great trips."</span>,
-)
-reply = <span class="k">await</span> agent.<span class="f">run</span>(<span class="s">"3 days in Kyoto?"</span>)</pre>
+    name=<span class="s">"ClaimsIntake"</span>,
+    instructions=<span class="s">"Triage auto claims."</span>,
+    tools=[policy_lookup, fraud_check],
+)</pre>
     </div>
-    <div class="panel" id="pnl-net" style="left:860px; top:214px; width:620px;">
+    <div class="panel" id="pnl-net" style="left:860px; top:248px; width:620px;">
       <div class="topbar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="lang">C# / .NET</span></div>
 <pre><span class="k">using</span> Microsoft.Agents.AI;
 
 <span class="f">AIAgent</span> agent = client.<span class="f">AsAIAgent</span>(
     model,
-    name: <span class="s">"Concierge"</span>,
-    instructions: <span class="s">"Plan great trips."</span>);
-
-<span class="k">var</span> reply = <span class="k">await</span> agent.<span class="f">RunAsync</span>(
-    <span class="s">"3 days in Kyoto?"</span>);</pre>
-    </div>
-    <div class="out-chip" id="chip-out" style="left:450px; top:606px; width:700px;">
-      <div class="who">Concierge</div>
-      <div id="ans"><span class="w">Day 1 — </span><span class="w">Fushimi Inari </span><span class="w">at dawn, </span><span class="w">then </span><span class="w">Nishiki Market. </span><span class="w">Day 2 — </span><span class="w">Arashiyama </span><span class="w">bamboo </span><span class="w">&amp; temples…</span></div>
+    name: <span class="s">"ClaimsIntake"</span>,
+    instructions: <span class="s">"Triage auto claims."</span>,
+    tools: [policyLookup, fraudCheck]);</pre>
     </div>
   </div>
 
-  <!-- 3 ANY MODEL -->
+  <!-- 3 LIVE CHAT (hero #1) -->
+  <div class="scene" id="s-chat">
+    <span class="tag">Watch it work</span>
+    <div class="chat" id="chatcard">
+      <div class="chead">
+        <div class="av">🛡️</div><div class="nm">ClaimsIntake agent</div><div class="st">streaming</div>
+      </div>
+      <div class="msg user" id="m-user"><span class="bub">Rear-ended at a red light yesterday — bumper's cracked. Policy AH-4471-K.</span></div>
+      <div class="tool" id="t-policy">
+        <span class="call"><span class="fn">policy_lookup</span>("AH-4471-K")</span>
+        <span class="arrow">→</span>
+        <span class="res" id="r-policy">✓ Comprehensive · $500 deductible · active</span>
+      </div>
+      <div class="tool" id="t-fraud">
+        <span class="call"><span class="fn">fraud_check</span>(claim)</span>
+        <span class="arrow">→</span>
+        <span class="res" id="r-fraud">✓ Low risk (0.06)</span>
+      </div>
+      <div class="msg bot" id="m-bot"><span class="bub"><span class="w">You're </span><span class="w">covered. </span><span class="w">Collision </span><span class="w">applies </span><span class="w">with </span><span class="w">a $500 </span><span class="w">deductible. </span><span class="w">I've </span><span class="w">opened </span><span class="w">claim </span><span class="w">CLM-88231 </span><span class="w">and </span><span class="w">routed </span><span class="w">it </span><span class="w">for </span><span class="w">approval.</span></span></div>
+      <div class="handoff" id="m-handoff">→ handoff: <b>Adjuster</b> · human approval</div>
+    </div>
+  </div>
+
+  <!-- 4 ANY MODEL -->
   <div class="scene" id="s-model">
     <span class="tag">Bring any model</span>
     <svg class="ov" id="ov-model" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
@@ -142,7 +200,7 @@ reply = <span class="k">await</span> agent.<span class="f">run</span>(<span clas
     <div class="lowcap" id="cap-model">Azure OpenAI, OpenAI, Anthropic, Gemini, Bedrock, Ollama — <b>swap the model, keep the code</b>.</div>
   </div>
 
-  <!-- 4 INTEROP -->
+  <!-- 5 INTEROP -->
   <div class="scene" id="s-interop">
     <span class="tag">Open by design</span>
     <svg class="ov" id="ov-interop" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
@@ -154,7 +212,7 @@ reply = <span class="k">await</span> agent.<span class="f">run</span>(<span clas
     <div class="lowcap" id="cap-interop"><b>MCP · A2A · Agent Skills · AG-UI</b> — interoperable, not walled-in.</div>
   </div>
 
-  <!-- 5 WORKFLOW GRAPH (hero) -->
+  <!-- 6 WORKFLOW GRAPH (hero #2) -->
   <div class="scene" id="s-flow">
     <span class="tag">Orchestrate many agents</span>
     <svg class="ov" id="ov-flow" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
@@ -162,10 +220,10 @@ reply = <span class="k">await</span> agent.<span class="f">run</span>(<span clas
       <g id="fl-nodes"></g>
       <g id="fl-pills"></g>
     </svg>
-    <div class="lowcap" id="cap-flow">Graph workflows — <b>sequential, concurrent, handoff, group</b>.</div>
+    <div class="lowcap" id="cap-flow">Compose many agents into <b>graph workflows</b> — orchestrated &amp; observable.</div>
   </div>
 
-  <!-- 6 PRODUCTION -->
+  <!-- 7 PRODUCTION + TRUST -->
   <div class="scene" id="s-prod">
     <span class="tag">Prototype → production</span>
     <div class="ga" id="ga-badge">GA 1.0</div>
@@ -173,14 +231,18 @@ reply = <span class="k">await</span> agent.<span class="f">run</span>(<span clas
       <g id="ot-bars"></g>
       <g id="ot-labels"></g>
     </svg>
-    <div class="lowcap" id="cap-prod"><b>OpenTelemetry · durable &amp; restartable · Foundry-hosted</b>.</div>
+    <div class="lowcap" id="cap-prod"><b>Entra identity · human-in-the-loop · OpenTelemetry · durable · Foundry-hosted</b>.</div>
   </div>
 
-  <!-- 7 OUTRO -->
+  <!-- 8 OUTRO -->
   <div class="scene" id="s-out">
     <div class="mark">Microsoft Agent Framework</div>
     <div class="sub">From a single prompt to production multi-agent systems.</div>
-    <div class="links">github.com/microsoft/agent-framework&nbsp;&nbsp;·&nbsp;&nbsp;learn.microsoft.com/agent-framework</div>
+    <div class="cta">
+      <div class="cmd"><span class="p">pip install</span> agent-framework</div>
+      <div class="cmd"><span class="p">dotnet add package</span> Microsoft.Agents.AI</div>
+    </div>
+    <div class="links2">github.com/microsoft/agent-framework&nbsp;&nbsp;·&nbsp;&nbsp;learn.microsoft.com/agent-framework</div>
   </div>
 
   <div id="bar-top"></div>
@@ -191,7 +253,7 @@ reply = <span class="k">await</span> agent.<span class="f">run</span>(<span clas
 <script type="module">
 import * as THREE from "./vendor/three.module.min.js";
 
-const DURATION = 47.0;
+const DURATION = 56.0;
 const CAPTURE = new URLSearchParams(location.search).has("capture");
 const SVGNS = "http://www.w3.org/2000/svg";
 
@@ -262,13 +324,15 @@ const stars=new THREE.Points(starGeo,new THREE.PointsMaterial({color:0x5a78c4,si
 scene.add(stars);
 
 /* ============ build SVG scene content ============ */
-// model provider chips around the agent core
+// model provider chips around the agent core (Azure OpenAI gets its real service icon)
 const PROVIDERS = ["Azure OpenAI","OpenAI","Anthropic","Gemini","Bedrock","Ollama"];
+const MDL_ICON = { "Azure OpenAI":"./assets/azure-openai.svg" };
 const mdlChips = document.getElementById("mdl-chips"), mdlSpokes = document.getElementById("mdl-spokes");
 PROVIDERS.forEach((name,i)=>{
   const ang = (-90 + i*60) * Math.PI/180, R = 290;
   const cx = 800 + Math.cos(ang)*R, cy = 450 + Math.sin(ang)*R*0.82;
-  const w = 36 + name.length*13.5, h = 54;
+  const ico = MDL_ICON[name];
+  const w = (ico ? 74 : 36) + name.length*13.5, h = 54;
   const sp = document.createElementNS(SVGNS,"line");
   sp.setAttribute("x1",800); sp.setAttribute("y1",450); sp.setAttribute("x2",cx); sp.setAttribute("y2",cy);
   mdlSpokes.appendChild(sp);
@@ -276,17 +340,28 @@ PROVIDERS.forEach((name,i)=>{
   const rect = document.createElementNS(SVGNS,"rect");
   rect.setAttribute("x",cx-w/2); rect.setAttribute("y",cy-h/2); rect.setAttribute("rx",14);
   rect.setAttribute("width",w); rect.setAttribute("height",h); rect.setAttribute("class","nodebox");
+  g.appendChild(rect);
+  const tx = ico ? cx + 16 : cx;
+  if (ico){
+    const img = document.createElementNS(SVGNS,"image");
+    img.setAttribute("href",ico); img.setAttributeNS("http://www.w3.org/1999/xlink","href",ico);
+    img.setAttribute("x",cx-w/2+14); img.setAttribute("y",cy-16); img.setAttribute("width",32); img.setAttribute("height",32);
+    g.appendChild(img);
+  }
   const txt = document.createElementNS(SVGNS,"text");
-  txt.setAttribute("x",cx); txt.setAttribute("y",cy+7); txt.setAttribute("class","nodelbl"); txt.setAttribute("font-size","21");
+  txt.setAttribute("x",tx); txt.setAttribute("y",cy+7); txt.setAttribute("class","nodelbl"); txt.setAttribute("font-size","21");
+  txt.setAttribute("text-anchor", ico ? "middle" : "middle");
   txt.textContent = name;
-  g.appendChild(rect); g.appendChild(txt); mdlChips.appendChild(g);
+  g.appendChild(txt); mdlChips.appendChild(g);
 });
 
-// interop nodes (4 connectors plugging into the agent)
+// interop nodes (4 connectors plugging into the agent); MCP shows its real wordmark
 const IO = [["MCP",420,250],["A2A",1180,250],["Agent Skills",420,650],["AG-UI",1180,650]];
+const IO_ICON = { "MCP": ["./assets/mcp.svg", 150, 22] };   // [href, w, h]
 const ioNodes = document.getElementById("io-nodes"), ioEdges = document.getElementById("io-edges");
 IO.forEach(([name,cx,cy],i)=>{
-  const w = 56 + name.length*15, h = 60;
+  const icon = IO_ICON[name];
+  const w = icon ? icon[1]+70 : 56 + name.length*15, h = 60;
   const ed = document.createElementNS(SVGNS,"path");
   ed.setAttribute("d",`M ${cx} ${cy} C ${(cx+800)/2} ${cy}, ${(cx+800)/2} ${450}, 800 450`);
   ed.setAttribute("class","io-edge"); ed.setAttribute("opacity","0"); ioEdges.appendChild(ed);
@@ -294,24 +369,30 @@ IO.forEach(([name,cx,cy],i)=>{
   const rect = document.createElementNS(SVGNS,"rect");
   rect.setAttribute("x",cx-w/2); rect.setAttribute("y",cy-h/2); rect.setAttribute("rx",15);
   rect.setAttribute("width",w); rect.setAttribute("height",h); rect.setAttribute("class","nodebox"); rect.setAttribute("stroke","#3ad0e8");
-  const txt = document.createElementNS(SVGNS,"text");
-  txt.setAttribute("x",cx); txt.setAttribute("y",cy+8); txt.setAttribute("class","nodelbl"); txt.setAttribute("font-size","23");
-  txt.textContent = name;
-  g.appendChild(rect); g.appendChild(txt); ioNodes.appendChild(g);
+  g.appendChild(rect);
+  if (icon){
+    const img = document.createElementNS(SVGNS,"image");
+    img.setAttribute("href",icon[0]); img.setAttributeNS("http://www.w3.org/1999/xlink","href",icon[0]);
+    img.setAttribute("x",cx-icon[1]/2); img.setAttribute("y",cy-icon[2]/2); img.setAttribute("width",icon[1]); img.setAttribute("height",icon[2]);
+    g.appendChild(img);
+  } else {
+    const txt = document.createElementNS(SVGNS,"text");
+    txt.setAttribute("x",cx); txt.setAttribute("y",cy+8); txt.setAttribute("class","nodelbl"); txt.setAttribute("font-size","23");
+    txt.textContent = name;
+    g.appendChild(txt);
+  }
+  ioNodes.appendChild(g);
 });
 
-// workflow graph nodes + edges
+// workflow graph nodes + edges (claims triage: intake -> [policy | fraud] -> adjuster HITL -> resolved)
 const FNODES = {
-  start:    ["Start",   250,450, 120],
-  planner:  ["Planner", 500,450, 150],
-  flights:  ["Flights", 820,290, 150],
-  hotels:   ["Hotels",  820,450, 150],
-  acts:     ["Activities",820,610,170],
-  critic:   ["Critic",  1130,450,150],
-  done:     ["Done",    1380,450,120],
+  intake:   ["Intake",        250,450, 150],
+  policy:   ["Policy Lookup", 590,300, 215],
+  fraud:    ["Fraud Check",   590,600, 200],
+  adjuster: ["Adjuster",      950,450, 175],
+  done:     ["Resolved",      1310,450, 160],
 };
-const FEDGES = [["start","planner"],["planner","flights"],["planner","hotels"],["planner","acts"],
-                ["flights","critic"],["hotels","critic"],["acts","critic"],["critic","done"]];
+const FEDGES = [["intake","policy"],["intake","fraud"],["policy","adjuster"],["fraud","adjuster"],["adjuster","done"]];
 const flNodes = document.getElementById("fl-nodes"), flEdges = document.getElementById("fl-edges");
 const NPOS = {};
 Object.entries(FNODES).forEach(([id,[label,cx,cy,w]])=>{
@@ -320,8 +401,10 @@ Object.entries(FNODES).forEach(([id,[label,cx,cy,w]])=>{
   const rect = document.createElementNS(SVGNS,"rect");
   rect.setAttribute("x",cx-w/2); rect.setAttribute("y",cy-h/2); rect.setAttribute("rx",16);
   rect.setAttribute("width",w); rect.setAttribute("height",h); rect.setAttribute("class","nodebox");
+  if (id==="adjuster") rect.setAttribute("stroke","#ffc45c");   // human-in-the-loop node stands out
   const txt = document.createElementNS(SVGNS,"text");
   txt.setAttribute("x",cx); txt.setAttribute("y",cy+8); txt.setAttribute("class","nodelbl"); txt.setAttribute("font-size","24");
+  if (id==="adjuster") txt.setAttribute("fill","#ffe0a8");
   txt.textContent = label;
   g.appendChild(rect); g.appendChild(txt); flNodes.appendChild(g);
 });
@@ -333,22 +416,26 @@ FEDGES.forEach(([a,b],i)=>{
   p.setAttribute("class","fl-edge"); p.setAttribute("data-i",i); p.setAttribute("opacity","0"); flEdges.appendChild(p);
 });
 // pills
-const PILLS = [["checkpoint",560,760],["human-in-the-loop",820,760],["time-travel",1120,760]];
+const PILLS = [["concurrent",590,706],["human-in-the-loop",950,706],["checkpointed",1310,706]];
 const flPills = document.getElementById("fl-pills");
 PILLS.forEach(([name,cx,cy])=>{
   const w = 40 + name.length*13;
   const g = document.createElementNS(SVGNS,"g"); g.setAttribute("class","fl-pill"); g.setAttribute("opacity","0");
   const rect = document.createElementNS(SVGNS,"rect");
   rect.setAttribute("x",cx-w/2); rect.setAttribute("y",cy-22); rect.setAttribute("rx",22);
-  rect.setAttribute("width",w); rect.setAttribute("height",44); rect.setAttribute("fill","rgba(58,208,232,.10)"); rect.setAttribute("stroke","#3ad0e8"); rect.setAttribute("stroke-width","1.5");
+  rect.setAttribute("width",w); rect.setAttribute("height",44);
+  const hil = name==="human-in-the-loop";
+  rect.setAttribute("fill", hil ? "rgba(255,196,92,.10)" : "rgba(58,208,232,.10)");
+  rect.setAttribute("stroke", hil ? "#ffc45c" : "#3ad0e8"); rect.setAttribute("stroke-width","1.5");
   const txt = document.createElementNS(SVGNS,"text");
-  txt.setAttribute("x",cx); txt.setAttribute("y",cy+6); txt.setAttribute("class","nodelbl"); txt.setAttribute("font-size","20"); txt.setAttribute("fill","#bdeefb");
+  txt.setAttribute("x",cx); txt.setAttribute("y",cy+6); txt.setAttribute("class","nodelbl"); txt.setAttribute("font-size","20");
+  txt.setAttribute("fill", hil ? "#ffe0a8" : "#bdeefb");
   txt.textContent = name;
   g.appendChild(rect); g.appendChild(txt); flPills.appendChild(g);
 });
-// OTel trace bars
-const TRACE = [["RUN agent",240,90,560],["plan()",360,160,300],["search_flights",420,260,360],
-               ["book_hotel",460,340,300],["critic.review",520,440,420],["emit AG-UI",640,560,260]];
+// OTel trace bars (claims run)
+const TRACE = [["RUN ClaimsIntake",240,90,560],["policy_lookup",360,160,320],["fraud_check",420,260,300],
+               ["decide()",460,340,250],["handoff → Adjuster",520,440,400],["emit AG-UI",660,560,240]];
 const otBars = document.getElementById("ot-bars"), otLabels = document.getElementById("ot-labels");
 TRACE.forEach(([name,x,y,w],i)=>{
   const rect = document.createElementNS(SVGNS,"rect"); rect.setAttribute("class","ot-bar");
@@ -361,13 +448,28 @@ TRACE.forEach(([name,x,y,w],i)=>{
   txt.setAttribute("fill","#07101e"); txt.setAttribute("font-family","ui-monospace, monospace"); txt.setAttribute("opacity","0");
   txt.textContent = name; otLabels.appendChild(txt);
 });
+// "powered by" Azure service strip (real official icons) — reinforces the trust beat
+const SVC = [["./assets/entra.svg","Entra identity"],["./assets/foundry.svg","Foundry-hosted"],
+             ["./assets/app-insights.svg","App Insights"],["./assets/monitor.svg","Azure Monitor"]];
+SVC.forEach(([href,label],i)=>{
+  const y = 318 + i*78;
+  const g = document.createElementNS(SVGNS,"g"); g.setAttribute("class","svc-ico"); g.setAttribute("opacity","0");
+  const img = document.createElementNS(SVGNS,"image");
+  img.setAttribute("href",href); img.setAttributeNS("http://www.w3.org/1999/xlink","href",href);
+  img.setAttribute("x",1070); img.setAttribute("y",y); img.setAttribute("width",52); img.setAttribute("height",52);
+  const txt = document.createElementNS(SVGNS,"text");
+  txt.setAttribute("x",1138); txt.setAttribute("y",y+33); txt.setAttribute("font-size","22");
+  txt.setAttribute("fill","#cfe2ff"); txt.setAttribute("font-family","'Segoe UI', sans-serif"); txt.setAttribute("font-weight","600");
+  txt.textContent = label;
+  g.appendChild(img); g.appendChild(txt); otBars.parentNode.appendChild(g);
+});
 
 /* ============ PAUSED GSAP timeline + state objects ============ */
 const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
 const camState = { z:15, x:0, y:0, gy:0 };
 const fx = { form:0, edgeGlow:0, bars:0, dim:1, scrim:0 };
 
-// --- 1 TITLE (0 -> ~5.5) ---
+// --- 1 TITLE (0 -> ~5.4) ---
 tl.to(fx,{form:1,duration:2.8,ease:"power2.out"},0.2);
 tl.to(fx,{bars:1,duration:1.0},0);
 tl.to(camState,{z:9.8,duration:4.2,ease:"power1.inOut"},0);
@@ -375,20 +477,37 @@ tl.to("#s-title .kicker",{opacity:1,y:0,duration:1.0},0.5);
 tl.to("#s-title h1",{opacity:1,duration:1.3},0.8);
 tl.fromTo("#s-title h1",{letterSpacing:"0.18em"},{letterSpacing:"0.04em",duration:1.8},0.8);
 tl.to("#s-title .sub",{opacity:1,y:0,duration:1.1},1.6);
-tl.to("#s-title",{opacity:0,duration:0.6,ease:"power2.in"},4.8);
+tl.to("#s-title",{opacity:0,duration:0.6,ease:"power2.in"},4.7);
 
-// --- 2 AGENT / CODE (5.5 -> 14) : panel mode ---
-const C = 5.6;
+// --- 2 AGENT / CODE (5.4 -> 11.2) : panel mode ---
+const C = 5.5;
 tl.to(fx,{dim:0.28,scrim:0.34,duration:1.0},C-0.3);
 tl.to("#s-code .tag",{opacity:1,duration:0.5},C+0.2);
 tl.fromTo("#pnl-py",{opacity:0,x:-40},{opacity:1,x:0,duration:0.9,ease:"power3.out"},C+0.3);
 tl.fromTo("#pnl-net",{opacity:0,x:40},{opacity:1,x:0,duration:0.9,ease:"power3.out"},C+0.9);
-tl.fromTo("#chip-out",{opacity:0,y:24},{opacity:1,y:0,duration:0.6},C+2.6);
-tl.to("#ans .w",{opacity:1,duration:0.4,stagger:0.16},C+3.0);
-tl.to(["#s-code .tag","#pnl-py","#pnl-net","#chip-out"],{opacity:0,duration:0.6,ease:"power2.in"},C+7.7);
+tl.to(["#s-code .tag","#pnl-py","#pnl-net"],{opacity:0,duration:0.6,ease:"power2.in"},C+5.0);
 
-// --- 3 ANY MODEL (14 -> 21) : graph-forward ---
-const M = 14.2;
+// --- 3 LIVE CHAT (11.2 -> 21.4) : hero #1 ---
+const CH = 11.3;
+tl.to(fx,{dim:0.22,scrim:0.42,duration:0.9},CH-0.3);
+tl.to("#s-chat .tag",{opacity:1,duration:0.5},CH+0.2);
+tl.fromTo("#chatcard",{opacity:0,y:26},{opacity:1,y:0,duration:0.7,ease:"power3.out"},CH+0.3);
+tl.fromTo("#m-user",{opacity:0,x:30},{opacity:1,x:0,duration:0.5,ease:"power3.out"},CH+0.9);
+// tool 1: policy lookup (AG-UI TOOL_CALL flavor)
+tl.fromTo("#t-policy",{opacity:0,y:10},{opacity:1,y:0,duration:0.45},CH+1.7);
+tl.fromTo("#r-policy",{opacity:0,x:-12},{opacity:1,x:0,duration:0.4},CH+2.5);
+// tool 2: fraud check
+tl.fromTo("#t-fraud",{opacity:0,y:10},{opacity:1,y:0,duration:0.45},CH+3.1);
+tl.fromTo("#r-fraud",{opacity:0,x:-12},{opacity:1,x:0,duration:0.4},CH+3.9);
+// streamed answer
+tl.fromTo("#m-bot",{opacity:0},{opacity:1,duration:0.3},CH+4.5);
+tl.to("#m-bot .w",{opacity:1,duration:0.3,stagger:0.11},CH+4.7);
+// human handoff
+tl.fromTo("#m-handoff",{opacity:0,scale:0.85,transformOrigin:"left center"},{opacity:1,scale:1,duration:0.5,ease:"back.out(1.5)"},CH+7.2);
+tl.to(["#s-chat .tag","#chatcard"],{opacity:0,duration:0.6,ease:"power2.in"},CH+9.5);
+
+// --- 4 ANY MODEL (21.4 -> 28) : graph-forward ---
+const M = 21.5;
 tl.to(fx,{dim:0.62,scrim:0.18,edgeGlow:0.7,duration:1.0},M-0.2);
 tl.to("#s-model .tag",{opacity:1,duration:0.5},M+0.2);
 tl.fromTo("#mdl-core",{attr:{r:0},opacity:0},{attr:{r:66},opacity:1,duration:0.7,ease:"back.out(1.6)"},M+0.3);
@@ -396,12 +515,11 @@ tl.to("#mdl-core-lbl",{opacity:1,duration:0.5},M+0.7);
 tl.to("#mdl-spokes",{opacity:0.5,duration:0.6},M+0.8);
 tl.to(".mdl-chip",{opacity:1,duration:0.5,stagger:0.12,ease:"back.out(1.4)"},M+1.0);
 tl.to("#cap-model",{opacity:1,duration:0.6},M+1.4);
-// a model chip "pulses" into the core (swap)
-tl.to("#mdl-spokes line",{attr:{"stroke-width":4},duration:0.3,yoyo:true,repeat:1,stagger:0.05},M+3.6);
-tl.to(["#s-model .tag","#ov-model","#cap-model"],{opacity:0,duration:0.6,ease:"power2.in"},M+6.4);
+tl.to("#mdl-spokes line",{attr:{"stroke-width":4},duration:0.3,yoyo:true,repeat:1,stagger:0.05},M+3.8);
+tl.to(["#s-model .tag","#ov-model","#cap-model"],{opacity:0,duration:0.6,ease:"power2.in"},M+6.0);
 
-// --- 4 INTEROP (21 -> 28) ---
-const I = 21.2;
+// --- 5 INTEROP (28 -> 34.4) ---
+const I = 28.2;
 tl.to(fx,{dim:0.6,edgeGlow:0.6,duration:0.8},I-0.2);
 tl.to("#s-interop .tag",{opacity:1,duration:0.5},I+0.2);
 tl.fromTo("#ov-interop circle",{opacity:0,scale:0.6,transformOrigin:"800px 450px"},{opacity:1,scale:1,duration:0.6,ease:"back.out(1.5)"},I+0.3);
@@ -409,46 +527,50 @@ tl.fromTo("#ov-interop > text",{opacity:0},{opacity:1,duration:0.5},I+0.5);
 tl.to(".io-edge",{opacity:0.8,duration:0.6,stagger:0.14},I+0.9);
 tl.to(".io-node",{opacity:1,duration:0.5,stagger:0.14,ease:"back.out(1.4)"},I+1.0);
 tl.to("#cap-interop",{opacity:1,duration:0.6},I+1.6);
-tl.to(["#s-interop .tag","#ov-interop","#cap-interop"],{opacity:0,duration:0.6,ease:"power2.in"},I+6.4);
+tl.to(["#s-interop .tag","#ov-interop","#cap-interop"],{opacity:0,duration:0.6,ease:"power2.in"},I+6.0);
 
-// --- 5 WORKFLOW GRAPH (28 -> 38) : hero ---
-const F = 28.2;
+// --- 6 WORKFLOW GRAPH (34.4 -> 46) : hero #2, breathes ---
+const F = 34.6;
 tl.to(fx,{dim:0.5,edgeGlow:0.85,scrim:0.22,duration:1.0},F-0.3);
-tl.to(camState,{gy:0.4,duration:9,ease:"power1.inOut"},F);
+tl.to(camState,{gy:0.4,duration:10.5,ease:"power1.inOut"},F);
 tl.to("#s-flow .tag",{opacity:1,duration:0.5},F+0.2);
-// sequential reveal: start -> planner -> fan-out -> converge -> done
-const order = ["start","planner","flights","hotels","acts","critic","done"];
+// sequential reveal: intake -> fan-out (policy|fraud) -> adjuster (HITL) -> resolved
+const order = ["intake","policy","fraud","adjuster","done"];
 order.forEach((id,i)=>{
   tl.fromTo(`.fl-node[data-id=${id}]`,{opacity:0,scale:0.7,transformOrigin:`${NPOS[id][0]}px ${NPOS[id][1]}px`},
-    {opacity:1,scale:1,duration:0.45,ease:"back.out(1.5)"},F+0.5+i*0.45);
+    {opacity:1,scale:1,duration:0.5,ease:"back.out(1.5)"},F+0.6+i*0.62);
 });
 // edges draw in after their source node
 FEDGES.forEach(([a,b],i)=>{
   const srcIdx = order.indexOf(a);
-  tl.fromTo(`.fl-edge[data-i="${i}"]`,{opacity:0},{opacity:0.85,duration:0.4},F+0.9+srcIdx*0.45+0.2);
+  tl.fromTo(`.fl-edge[data-i="${i}"]`,{opacity:0},{opacity:0.85,duration:0.45},F+1.1+srcIdx*0.62+0.25);
 });
-tl.to("#cap-flow",{opacity:1,duration:0.6},F+1.4);
-tl.to(".fl-pill",{opacity:1,duration:0.5,stagger:0.16,ease:"back.out(1.4)"},F+5.6);
-tl.to(["#s-flow .tag","#ov-flow","#cap-flow"],{opacity:0,duration:0.6,ease:"power2.in"},F+9.4);
+tl.to("#cap-flow",{opacity:1,duration:0.6},F+1.6);
+tl.to(".fl-pill",{opacity:1,duration:0.5,stagger:0.18,ease:"back.out(1.4)"},F+5.4);
+// pulse the human-in-the-loop adjuster node to land the trust beat
+tl.to(".fl-node[data-id=adjuster] rect",{attr:{"stroke-width":4},duration:0.4,yoyo:true,repeat:3},F+7.4);
+tl.to(["#s-flow .tag","#ov-flow","#cap-flow"],{opacity:0,duration:0.6,ease:"power2.in"},F+10.8);
 
-// --- 6 PRODUCTION (38 -> 43) ---
-const P = 38.2;
+// --- 7 PRODUCTION + TRUST (46 -> 51.4) ---
+const P = 46.0;
 tl.to(fx,{dim:0.4,scrim:0.3,edgeGlow:0.5,duration:0.9},P-0.2);
 tl.to("#s-prod .tag",{opacity:1,duration:0.5},P+0.2);
 tl.fromTo("#ga-badge",{opacity:0,y:-14,scale:0.8},{opacity:1,y:0,scale:1,duration:0.6,ease:"back.out(1.6)"},P+0.4);
 tl.to(".ot-bar",{attr:{width:(i,el)=>+el.getAttribute("data-w")},duration:0.55,stagger:0.12,ease:"power2.out"},P+0.7);
 tl.to(".ot-lbl",{opacity:1,duration:0.4,stagger:0.12},P+0.95);
-tl.to("#cap-prod",{opacity:1,duration:0.6},P+1.4);
-tl.to(["#s-prod .tag","#ov-prod","#cap-prod","#ga-badge"],{opacity:0,duration:0.6,ease:"power2.in"},P+4.6);
+tl.to(".svc-ico",{opacity:1,duration:0.5,stagger:0.1,ease:"back.out(1.4)"},P+1.2);
+tl.to("#cap-prod",{opacity:1,duration:0.6},P+1.6);
+tl.to(["#s-prod .tag","#ov-prod","#cap-prod","#ga-badge"],{opacity:0,duration:0.6,ease:"power2.in"},P+5.0);
 
-// --- 7 OUTRO (43 -> 47) ---
-const O = 43.2;
+// --- 8 OUTRO (51.4 -> 56) ---
+const O = 51.4;
 tl.to(fx,{dim:1,scrim:0,edgeGlow:0.4,duration:1.2},O-0.3);
-tl.to(camState,{z:13.5,gy:0.7,duration:3.8,ease:"power1.inOut"},O-0.3);
+tl.to(camState,{z:13.5,gy:0.7,duration:4.2,ease:"power1.inOut"},O-0.3);
 tl.to("#s-out .mark",{opacity:1,duration:1.0},O+0.2);
-tl.to("#s-out .sub",{opacity:1,duration:0.9},O+0.9);
-tl.to("#s-out .links",{opacity:1,duration:0.9},O+1.6);
-tl.to(fx,{bars:1.0,duration:0.8},O+2.2);
+tl.to("#s-out .sub",{opacity:1,duration:0.9},O+0.8);
+tl.to("#s-out .cta",{opacity:1,duration:0.9},O+1.4);
+tl.to("#s-out .links2",{opacity:1,duration:0.8},O+2.1);
+tl.to(fx,{bars:1.0,duration:0.8},O+2.6);
 
 /* ============ render — derived from state objects ============ */
 const scrimEl = document.getElementById("scrim");

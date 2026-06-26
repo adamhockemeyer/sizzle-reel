@@ -5,20 +5,23 @@ an open, multi-language framework for building production-grade AI agents and mu
 .NET and Python.
 
 This is the **"no product UI"** case: MAF is a library, not an app you can screenshot. The reel proves the
-skill can dramatize a *framework* by assembling its real artifacts — Python/.NET code, model-provider and
-interop nodes, and an animated multi-agent **workflow graph** (the literal thing MAF builds) — over a
-subtle Azure-palette constellation backdrop.
+skill can dramatize a *framework* by assembling its real artifacts — Python/.NET code, a **live agent chat**,
+model-provider and interop nodes, and an animated multi-agent **workflow graph** (the literal thing MAF
+builds) — over a subtle Azure-palette constellation backdrop. The worked example is an enterprise
+**insurance claims triage** agent, so it reads as a real business outcome rather than a toy.
 
 | | |
 | --- | --- |
-| **Duration** | ~47s |
+| **Duration** | ~56s |
 | **Backdrop** | Subtle agent-graph constellation, recolored to a Microsoft/Azure palette (the graph *is* the product) |
-| **Scenes** | Title → one Agent in Python & .NET → bring any model → open interop (MCP · A2A · Skills · AG-UI) → workflow graph (sequential/concurrent/handoff/group) → production (OpenTelemetry · durable · Foundry-hosted · GA 1.0) → close |
-| **Signature moves** | Real, accurate code panels; mechanism dramatization (provider/interop/graph nodes drawn on); animated chat streaming; graph-forward hero beat |
+| **Scenes** | Title → one Agent in Python & .NET → **live claims chat** (tool calls stream, then a human-adjuster handoff) → bring any model → open interop (MCP · A2A · Skills · AG-UI) → workflow graph (intake → policy/fraud fan-out → human-in-the-loop adjuster) → production & trust (Entra · HITL · OpenTelemetry · durable · Foundry · GA 1.0) → close on the install command |
+| **Signature moves** | Real, accurate code panels; a **streaming agent conversation** with `policy_lookup`/`fraud_check` tool calls and a human handoff; **real product icons** (Azure OpenAI, MCP wordmark, Entra/Foundry/App Insights/Monitor); mechanism-as-hero workflow graph; lead-with-outcome, close-on-the-action |
 
 Everything on screen is verified against current MAF docs (GA 1.0): packages `agent-framework`
 (Python) / `Microsoft.Agents.AI` (.NET), the `Agent` / `AIAgent` APIs, the orchestration patterns, and
-first-class MCP / A2A / Agent Skills / AG-UI support.
+first-class MCP / A2A / Agent Skills / AG-UI support. Official Microsoft/Azure icons come from the Azure
+architecture icon set; the MCP logo from modelcontextprotocol.io. Other model-provider names are rendered
+as plain text wordmarks (no third-party logos).
 
 ## Output
 
@@ -33,8 +36,8 @@ including how to brief the skill when the subject has **no website**.
 
 ## How it was rendered
 
-The scene source ([`index.html`](index.html)) is committed so the reel is reproducible. Vendor
-three.js + GSAP into `./vendor` first (`npm i three gsap`, then copy
+The scene source ([`index.html`](index.html)) and the icon [`assets/`](assets/) are committed so the reel is
+reproducible. Vendor three.js + GSAP into `./vendor` first (`npm i three gsap`, then copy
 `three/build/three.module.min.js`, `three/build/three.core.min.js`, and `gsap/dist/gsap.min.js`), then:
 
 ```bash

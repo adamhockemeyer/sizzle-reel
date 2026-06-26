@@ -1,14 +1,14 @@
 [
   ["01-title", 2600],
-  ["02-title-full", 4300],
-  ["03-code-py", 6400],
-  ["04-code-both", 7600],
-  ["05-code-answer", 9800],
-  ["06-model-chips", 16000],
-  ["07-model-swap", 18400],
-  ["08-interop", 23200],
-  ["09-flow-fanout", 31200],
-  ["10-flow-full", 35200],
-  ["11-prod-otel", 40400],
-  ["12-outro", 45600]
+  ["02-code-both", 7400],
+  ["03-chat-user", 12400],
+  ["04-chat-tools", 15600],
+  ["05-chat-answer", 17900],
+  ["06-chat-handoff", 19300],
+  ["07-model-icons", 23600],
+  ["08-interop-mcp", 30300],
+  ["09-flow-fanout", 37200],
+  ["10-flow-hitl", 42800],
+  ["11-prod-trust", 48600],
+  ["12-outro-cta", 54600]
 ]
