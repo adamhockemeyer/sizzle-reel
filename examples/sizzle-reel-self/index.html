@@ -78,6 +78,31 @@
   .pbar .fill { width: 0%; height: 100%; border-radius: 6px;
     background: linear-gradient(90deg,#f0973a,#ffd27a); box-shadow: 0 0 14px -2px #ffb454; }
 
+  /* ---- Decide: how it chooses what to make (reads repo -> understands -> plans) ---- */
+  #s-decide .flow { position: absolute; left: 50%; top: 232px; transform: translateX(-50%);
+    display: flex; align-items: stretch; gap: 22px; }
+  #s-decide .fcard { opacity: 0; width: 292px; border-radius: 16px; padding: 22px 22px 24px;
+    background: linear-gradient(180deg, rgba(26,19,11,.97), rgba(16,12,7,.98));
+    border: 1px solid rgba(255,180,84,.22);
+    box-shadow: 0 40px 90px -34px rgba(0,0,0,.9), 0 0 60px -26px rgba(240,150,60,.24);
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+  #s-decide .fhd { font-size: 14px; letter-spacing: .16em; text-transform: uppercase; color: #ffb454;
+    font-weight: 700; margin-bottom: 18px; }
+  #s-decide .chip { display: inline-block; margin: 0 6px 9px 0; padding: 7px 12px; border-radius: 9px;
+    font-size: 16px; color: #ead9bd; background: rgba(255,180,84,.08); border: 1px solid rgba(255,180,84,.2); }
+  #s-decide .krow { display: flex; gap: 10px; align-items: baseline; margin-bottom: 12px; font-size: 16px; }
+  #s-decide .kk { color: #9c8a6e; min-width: 76px; }
+  #s-decide .kv { color: #ffce7a; font-weight: 600; }
+  #s-decide .farr { align-self: center; opacity: 0; font-size: 30px; color: #ffb454;
+    font-family: ui-monospace, Consolas, monospace; }
+  #s-decide .swatches { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; }
+  #s-decide .swatches i { width: 24px; height: 24px; border-radius: 6px; display: inline-block;
+    border: 1px solid rgba(255,255,255,.12); }
+  #s-decide .sw-lbl { margin-left: 6px; font-size: 15px; color: #cbb89a; }
+  #s-decide .plan-scenes { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+  #s-decide .plan-scenes span { font-size: 14px; color: #ead9bd; padding: 5px 10px; border-radius: 8px;
+    background: rgba(255,180,84,.07); border: 1px solid rgba(255,180,84,.18); }
+
   /* ---- shared SVG overlay ---- */
   .ov { position: absolute; inset: 0; width: 100%; height: 100%; }
   .pcard { fill: rgba(26,19,11,.95); stroke: rgba(255,180,84,.5); stroke-width: 2; }
@@ -136,7 +161,36 @@
     <div class="promise">Describe it once — it renders <b>deterministically</b>, identical every run.</div>
   </div>
 
-  <!-- 3 TERMINAL (hero #1) -->
+  <!-- 3 DECIDE: reads repo -> understands -> plans -->
+  <div class="scene" id="s-decide">
+    <span class="tag">How it decides</span>
+    <div class="flow">
+      <div class="fcard" id="dc-read">
+        <div class="fhd">reads your repo</div>
+        <span class="chip">README.md</span>
+        <span class="chip">SKILL.md</span>
+        <span class="chip">scripts/</span>
+        <span class="chip">package.json</span>
+      </div>
+      <span class="farr" id="dc-a1">&#8594;</span>
+      <div class="fcard" id="dc-know">
+        <div class="fhd">understands</div>
+        <div class="krow"><span class="kk">subject</span><span class="kv">a CLI / agent tool</span></div>
+        <div class="krow"><span class="kk">product UI</span><span class="kv">none &#8594; assemble it</span></div>
+        <div class="krow"><span class="kk">the hook</span><span class="kv">deterministic render</span></div>
+      </div>
+      <span class="farr" id="dc-a2">&#8594;</span>
+      <div class="fcard" id="dc-plan">
+        <div class="fhd">plans the reel</div>
+        <div class="swatches"><i style="background:#ffb454"></i><i style="background:#ffd27a"></i><i style="background:#ff5e57"></i><span class="sw-lbl">warm / cinematic</span></div>
+        <div class="krow"><span class="kk">backdrop</span><span class="kv">film dust</span></div>
+        <div class="plan-scenes"><span>Title</span><span>Prompt</span><span>Mechanism</span><span>Built-on</span><span>Install</span></div>
+      </div>
+    </div>
+    <div class="lowcap" id="cap-decide">It reads your project — then <b>decides the story, palette, and backdrop</b>.</div>
+  </div>
+
+  <!-- 4 TERMINAL (hero #1) -->
   <div class="scene" id="s-term">
     <span class="tag">One prompt</span>
     <div class="term" id="termcard">
@@ -146,17 +200,17 @@
       </div>
       <div class="body">
         <div class="ln cmd" id="t-prompt"><span class="p">&gt;</span> make a sizzle reel for this project<span id="caret">&#x258b;</span></div>
-        <div class="ln" id="t-l1"><span class="ok">&#10003;</span> Inspected README — chose a <span class="sp">filmstrip backdrop + warm palette</span></div>
+        <div class="ln" id="t-l1"><span class="ok">&#10003;</span> Read the repo &amp; planned the reel</div>
         <div class="ln" id="t-l2"><span class="ok">&#10003;</span> Authored <span class="sp">6 scenes</span> on a paused GSAP timeline</div>
         <div class="ln" id="t-l3"><span class="ok">&#10003;</span> Smoke test — 16 beats, non-black <span class="ok">&#10003;</span></div>
-        <div class="ln" id="t-l4"><span class="sp" id="spin">&#x283f;</span> Capturing <span class="sp">1500 frames</span> <span class="pbar"><span class="fill" id="pfill"></span></span></div>
+        <div class="ln" id="t-l4"><span class="sp" id="spin">&#x283f;</span> Capturing <span class="sp">1563 frames</span> <span class="pbar"><span class="fill" id="pfill"></span></span></div>
         <div class="ln" id="t-l5"><span class="ok">&#10003;</span> Encoded <span class="sp">sizzle.mp4</span> · <span class="sp">sizzle.gif</span> <span class="mut">&#8627; ready for your README</span></div>
       </div>
     </div>
     <div class="lowcap" id="cap-term">Ask your agent — it <b>designs, renders, and hands you the files</b>.</div>
   </div>
 
-  <!-- 4 MECHANISM: frames -> film (hero #2) -->
+  <!-- 5 MECHANISM: frames -> film (hero #2) -->
   <div class="scene" id="s-mech">
     <span class="tag">How it works</span>
     <svg class="ov" id="ov-mech" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
@@ -188,7 +242,7 @@
     <div class="lowcap" id="cap-mech">A paused timeline, <b>seeked frame-by-frame</b> &#8594; ffmpeg &#8594; MP4 + GIF.</div>
   </div>
 
-  <!-- 5 BUILT ON / DETERMINISTIC -->
+  <!-- 6 BUILT ON / DETERMINISTIC -->
   <div class="scene" id="s-stack">
     <span class="tag">Built to be reliable</span>
     <svg class="ov" id="ov-stack" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
@@ -202,7 +256,7 @@
     <div class="lowcap" id="cap-stack">Pure Node, cross-platform — <b>self-contained &amp; deterministic</b>.</div>
   </div>
 
-  <!-- 6 OUTRO / INSTALL -->
+  <!-- 7 OUTRO / INSTALL -->
   <div class="scene" id="s-out">
     <div class="mark">sizzle-reel</div>
     <div class="sub">One prompt. A cinematic README video. Across 72+ coding agents.</div>
@@ -218,7 +272,7 @@
 <script type="module">
 import * as THREE from "./vendor/three.module.min.js";
 
-const DURATION = 43.5;
+const DURATION = 52.1;
 const CAPTURE = new URLSearchParams(location.search).has("capture");
 const SVGNS = "http://www.w3.org/2000/svg";
 
@@ -361,8 +415,21 @@ tl.to("#s-pitch h2",{opacity:1,duration:0.8},D+1.6);
 tl.to("#s-pitch .promise",{opacity:1,y:0,duration:0.9},D+2.3);
 tl.to("#s-pitch",{opacity:0,duration:0.6,ease:"power2.in"},D+4.4);
 
-// --- 3 TERMINAL (10.2 -> 20.0) : hero #1 ---
-const T = 10.2;
+// --- 3 DECIDE: reads repo -> understands -> plans (NEW: how it chooses what to make) ---
+const C = 10.0;
+tl.to(fx,{dim:0.24,scrim:0.5,duration:1.0},C-0.3);
+tl.to("#s-decide .tag",{opacity:1,duration:0.5},C+0.2);
+tl.fromTo("#dc-read",{opacity:0,y:24},{opacity:1,y:0,duration:0.6,ease:"power3.out"},C+0.5);
+tl.to("#dc-a1",{opacity:1,duration:0.4},C+1.3);
+tl.fromTo("#dc-know",{opacity:0,y:24},{opacity:1,y:0,duration:0.6,ease:"power3.out"},C+1.6);
+tl.to("#dc-a2",{opacity:1,duration:0.4},C+2.6);
+tl.fromTo("#dc-plan",{opacity:0,y:24},{opacity:1,y:0,duration:0.6,ease:"power3.out"},C+2.9);
+tl.fromTo("#s-decide .plan-scenes span",{opacity:0,y:8},{opacity:1,y:0,duration:0.35,stagger:0.08,ease:"back.out(1.4)"},C+3.6);
+tl.to("#cap-decide",{opacity:1,duration:0.6},C+4.7);
+tl.to(["#s-decide .tag","#dc-read","#dc-a1","#dc-know","#dc-a2","#dc-plan","#cap-decide"],{opacity:0,duration:0.6,ease:"power2.in"},C+7.4);
+
+// --- 4 TERMINAL (18.8 -> 28.2) : hero #1 ---
+const T = 18.8;
 tl.to(fx,{dim:0.20,scrim:0.5,duration:0.9},T-0.3);
 tl.to("#s-term .tag",{opacity:1,duration:0.5},T+0.2);
 tl.fromTo("#termcard",{opacity:0,y:26},{opacity:1,y:0,duration:0.7,ease:"power3.out"},T+0.3);
@@ -377,8 +444,8 @@ tl.to("#t-l5",{opacity:1,duration:0.45,ease:"back.out(1.4)"},T+7.4);
 tl.to("#cap-term",{opacity:1,duration:0.6},T+8.0);
 tl.to(["#s-term .tag","#termcard","#cap-term"],{opacity:0,duration:0.6,ease:"power2.in"},T+9.4);
 
-// --- 4 MECHANISM frames->film (20.6 -> 31.0) : hero #2, graph-forward ---
-const M = 20.6;
+// --- 5 MECHANISM frames->film (29.2 -> 39.6) : hero #2, graph-forward ---
+const M = 29.2;
 tl.to(fx,{dim:0.66,scrim:0.2,duration:1.0},M-0.2);
 tl.to(camState,{z:12.0,duration:10.0,ease:"power1.inOut"},M);
 tl.to("#s-mech .tag",{opacity:1,duration:0.5},M+0.2);
@@ -399,8 +466,8 @@ tl.fromTo("#out-mp4",{opacity:0,x:20,scale:0.8,transformOrigin:"1435px 403px"},{
 tl.fromTo("#out-gif",{opacity:0,x:20,scale:0.8,transformOrigin:"1435px 497px"},{opacity:1,x:0,scale:1,duration:0.5,ease:"back.out(1.5)"},M+6.3);
 tl.to(["#s-mech .tag","#ov-mech","#cap-mech"],{opacity:0,duration:0.6,ease:"power2.in"},M+9.8);
 
-// --- 5 BUILT ON / DETERMINISTIC (31.6 -> 37.0) : panel ---
-const S = 31.6;
+// --- 6 BUILT ON / DETERMINISTIC (40.2 -> 45.6) : panel ---
+const S = 40.2;
 tl.to(fx,{dim:0.34,scrim:0.4,duration:0.9},S-0.2);
 tl.to("#s-stack .tag",{opacity:1,duration:0.5},S+0.2);
 tl.to(".stk",{opacity:1,duration:0.5,stagger:0.12,ease:"back.out(1.4)"},S+0.4);
@@ -408,8 +475,8 @@ tl.to(".pill",{opacity:1,duration:0.5,stagger:0.14,ease:"back.out(1.3)"},S+1.4);
 tl.to("#cap-stack",{opacity:1,duration:0.6},S+2.2);
 tl.to(["#s-stack .tag","#ov-stack",".pillars","#cap-stack"],{opacity:0,duration:0.6,ease:"power2.in"},S+4.6);
 
-// --- 6 OUTRO / INSTALL (37.8 -> 43.5) ---
-const O = 37.8;
+// --- 7 OUTRO / INSTALL (46.4 -> 52.1) ---
+const O = 46.4;
 tl.to(fx,{dim:1,scrim:0,duration:1.2},O-0.3);
 tl.to(camState,{z:13.8,duration:4.4,ease:"power1.inOut"},O-0.3);
 tl.to("#s-out .mark",{opacity:1,duration:1.0},O+0.2);
