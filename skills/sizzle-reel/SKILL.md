@@ -124,11 +124,14 @@ Windows `winget install Gyan.FFmpeg`; macOS `brew install ffmpeg`; Linux `apt in
    `references/assets.md` when a beat names real products (use official icons, mind trademarks). Animate
    the *actual differentiator* — and ground it in real product screenshots, or, for a subject with **no
    UI** (a library/API/protocol), *assemble* the interface from code panels + chat + an artifact graph.
-3. **Smoke-test (fast, ~90s).** `node scripts/smoke.mjs` seeks ~15–20 timestamps, screenshots each, and
-   fails on any console/page error. Iterate here — do NOT full-capture to check a tweak.
-4. **Measure positions** when adjusting layout (caption clipping, overlaps) by reading
-   `getBoundingClientRect()` at a seeked time — cheaper and exact vs. eyeballing frames. Captions should
-   sit ≥ ~74px off the frame bottom.
+3. **Smoke-test (fast, ~90s).** `node scripts/smoke.mjs` seeks ~15–20 timestamps, screenshots each, fails
+   on any console/page error, **and runs a layout audit** that flags text which crosses the frame, sits
+   under a letterbox bar, or is clipped in its own box. Iterate here — do NOT full-capture to check a tweak.
+4. **Keep all text inside the safe area.** Top kickers must clear the letterbox bar (bars at 60px →
+   `top ≥ ~80px`); captions sit ≥ ~74px off the bottom; keep ~28px side margins and give wide lines a
+   `max-width`. Don't eyeball it — fix every `✗` the smoke layout audit prints, and run the final smoke with
+   `--strict` so a clipped reel can't pass the gate. Measure exact positions with `getBoundingClientRect()`
+   at a seeked time when adjusting layout.
 5. **Full capture (~10 min for 46s).** `node scripts/capture.mjs` writes 1 PNG per frame
    (DURATION × fps) at 1600×900.
 6. **Encode.** Cross-platform (Win/macOS/Linux): `node scripts/encode.mjs --frames <dir>/frames
@@ -144,7 +147,7 @@ Windows `winget install Gyan.FFmpeg`; macOS `brew install ffmpeg`; Linux `apt in
 
 | Script | Purpose |
 | --- | --- |
-| `scripts/smoke.mjs` | Seek N beats, screenshot each, assert zero errors. Run before every full capture. |
+| `scripts/smoke.mjs` | Seek N beats, screenshot each, assert zero errors + audit text for frame/letterbox/overflow clipping (`--strict` to gate, `--margin` to tune). Run before every full capture. |
 | `scripts/capture.mjs` | Deterministic frame-by-frame PNG capture via headless Chromium. |
 | `scripts/encode.mjs` | **Cross-platform (Win/macOS/Linux)** ffmpeg encode → MP4 + slim GIF (+ poster), optional `--sync`. |
 

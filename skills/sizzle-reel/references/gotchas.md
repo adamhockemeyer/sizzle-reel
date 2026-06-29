@@ -68,6 +68,31 @@ bottom caption **≥ ~74px** off the frame bottom. To check precisely, seek to t
 `getBoundingClientRect()` rather than eyeballing exported frames — confirm bottom ≤ frameHeight − 74 and
 that it doesn't overlap any card above it.
 
+## Text cut off by the letterbox bars (top kicker / tags)
+
+The single most common clipping bug: **cinematic letterbox bars and top-anchored text fight for the same
+pixels.** If the bars animate to `H` px and a top kicker/tag sits at `top: <H>` or less, the bar paints over
+the top of the glyphs. (Real example: bars → 60px, `.tag` at `top:54px` → every section kicker was shaved.)
+
+**Rule — define a safe area and keep all text inside it.** With letterbox bars of height `B`:
+- Top text must start at **`top ≥ B + ~12px`** (bars at 60px → tags at `top:80px`).
+- Bottom text must end at **`bottom ≥ B + ~14px`** (and ≥ 74px regardless, per above).
+- Horizontally keep a **≥ ~28px** margin; never let a fixed-width line (terminal rows, long captions) run
+  to the frame edge — give it a `max-width` and let it wrap instead.
+
+**Don't eyeball it — the smoke script audits this automatically.** `smoke.mjs` runs a layout audit at every
+beat that flags any visible text that **crosses the frame**, sits **under a letterbox bar**, or is **clipped
+inside its own `overflow:hidden` box**, plus soft **near-edge** warnings inside the safe margin. It prints
+the beat + a text snippet so you know exactly what to move. Treat any `✗` line as a must-fix:
+
+```
+[layout] beat-03 (8700ms): 1 issue(s)
+   ✗ under-letterbox [666,54 267x17] "Not a screen recording"
+```
+
+Run `node …/smoke.mjs --dir . --strict` to make those hard failures (exit 1) — wire `--strict` into your
+"is it done?" gate so a clipped reel can never be rendered/committed. Tune the soft margin with `--margin`.
+
 ## Animation looks right scrubbing live but a single seeked frame is wrong
 
 The timeline must be **fully reconstructible at any arbitrary `t`** — `tl.time(t)` jumps there cold, with
