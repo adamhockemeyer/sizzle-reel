@@ -78,7 +78,7 @@
   .pbar .fill { width: 0%; height: 100%; border-radius: 6px;
     background: linear-gradient(90deg,#f0973a,#ffd27a); box-shadow: 0 0 14px -2px #ffb454; }
 
-  /* ---- Decide: how it chooses what to make (reads repo -> understands -> plans) ---- */
+  /* ---- Decide: how it chooses what to make (studies subject -> understands -> plans) ---- */
   #s-decide .flow { position: absolute; left: 50%; top: 232px; transform: translateX(-50%);
     display: flex; align-items: stretch; gap: 22px; }
   #s-decide .fcard { opacity: 0; width: 292px; border-radius: 16px; padding: 22px 22px 24px;
@@ -161,16 +161,16 @@
     <div class="promise">Describe it once — it renders <b>deterministically</b>, identical every run.</div>
   </div>
 
-  <!-- 3 DECIDE: reads repo -> understands -> plans -->
+  <!-- 3 DECIDE: studies subject -> understands -> plans -->
   <div class="scene" id="s-decide">
     <span class="tag">How it decides</span>
     <div class="flow">
       <div class="fcard" id="dc-read">
-        <div class="fhd">reads your repo</div>
-        <span class="chip">README.md</span>
-        <span class="chip">SKILL.md</span>
-        <span class="chip">scripts/</span>
-        <span class="chip">package.json</span>
+        <div class="fhd">studies the subject</div>
+        <span class="chip">README</span>
+        <span class="chip">code</span>
+        <span class="chip">docs</span>
+        <span class="chip">research</span>
       </div>
       <span class="farr" id="dc-a1">&#8594;</span>
       <div class="fcard" id="dc-know">
@@ -187,7 +187,7 @@
         <div class="plan-scenes"><span>Title</span><span>Prompt</span><span>Mechanism</span><span>Built-on</span><span>Install</span></div>
       </div>
     </div>
-    <div class="lowcap" id="cap-decide">It reads your project — then <b>decides the story, palette, and backdrop</b>.</div>
+    <div class="lowcap" id="cap-decide">It studies the subject &mdash; a repo, a site, or docs it researches &mdash; then <b>decides the story, palette, and backdrop</b>.</div>
   </div>
 
   <!-- 4 TERMINAL (hero #1) -->
