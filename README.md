@@ -111,6 +111,7 @@ Real reels produced by this skill. Each folder has the **prompt** used and the *
 | --- | --- | --- |
 | [`context-engine`](examples/context-engine/) | A graph/RAG "context engine" | Neural-graph backdrop, 5 scenes, panel-by-panel reveal of dashboard / schema / graph / streamed answer |
 | [`microsoft-agent-framework`](examples/microsoft-agent-framework/) | An open-source framework (**no UI**) | Assembled "interface": real Python/.NET code, a **live claims-triage agent chat** (tool calls + human handoff), real product icons, and an animated multi-agent workflow graph — Azure palette |
+| [`sizzle-reel-self`](examples/sizzle-reel-self/) | A CLI/dev tool — **the skill itself** (no UI) | Deliberately divergent: **warm filmstrip** palette + drifting-motes backdrop, a **streaming terminal** hero, and a **frames → film** mechanism (playhead sweep → `.mp4`/`.gif`) with real build-stack icons |
 
 > More examples coming. Built a good one? PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 

@@ -29,7 +29,10 @@ URLs and pack versions move):
   the MCP site; pick the light vs dark variant to match your backdrop).
 - **A third-party product** — that vendor's official brand/press kit, not a random PNG from search.
 - **Generic tech (languages, DBs, clouds)** — community sets like Simple Icons / Devicon are fine for
-  *neutral* tech marks, but prefer the first-party brand kit for any *named product*.
+  *neutral* tech marks, but prefer the first-party brand kit for any *named product*. The
+  [Iconify](https://iconify.design) API/MCP is a convenient open-licensed aggregator (275k+ icons across
+  Simple Icons, Devicon, Logos, etc.) for fetching these generic marks as SVG — but the **trademark caution
+  below still applies**: Iconify hosting an icon does not grant brand-usage rights.
 
 ## Trademark caution (important for published repos)
 

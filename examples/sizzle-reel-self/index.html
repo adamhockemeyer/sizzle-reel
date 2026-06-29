@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>sizzle-reel — a sizzle reel for the sizzle-reel skill</title>
+<!--
+  A self-referential sizzle reel: the subject IS the sizzle-reel skill (a CLI/agent tool that
+  turns any repo into a cinematic README video). No product UI to screenshot, so the "interface"
+  is a re-created streaming terminal + a literal filmstrip mechanism (frames -> film). Warm
+  cinematic palette (amber/gold on charcoal) with a drifting-motes backdrop (NOT the graph) so it
+  reads visually distinct from the other two examples. Deterministic paused-GSAP-seek harness.
+
+  Vendor three.module.min.js (+ three.core.min.js) + gsap.min.js into ./vendor.
+  Smoke:   node ../../skills/sizzle-reel/scripts/smoke.mjs   --dir .
+  Capture: node ../../skills/sizzle-reel/scripts/capture.mjs --dir . --fps 30 --w 1600 --h 900
+  Encode:  node ../../skills/sizzle-reel/scripts/encode.mjs --frames ./frames --out . --name sizzle-reel-self
+-->
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #0c0a07; overflow: hidden;
+    font-family: "Segoe UI", ui-sans-serif, system-ui, Roboto, sans-serif; color: #fbf2e4; }
+  #stage { position: fixed; inset: 0; width: 1600px; height: 900px; }
+  #gl { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #scrim { position: absolute; inset: 0; background: rgba(12,10,7,0); pointer-events: none; z-index: 5; }
+  #bar-top, #bar-bot { position: absolute; left: 0; right: 0; height: 0; background: #0c0a07; z-index: 60; }
+  #bar-top { top: 0; } #bar-bot { bottom: 0; }
+  .scene { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
+
+  .tag { position: absolute; top: 54px; left: 50%; transform: translateX(-50%); opacity: 0;
+    font-size: 13px; letter-spacing: .34em; text-transform: uppercase; color: #ffb454; font-weight: 700; }
+  .lowcap { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); opacity: 0;
+    font-size: 26px; font-weight: 600; text-align: center; max-width: 1140px;
+    text-shadow: 0 2px 24px rgba(12,10,7,.9); }
+  .lowcap b { color: #ffce7a; font-weight: 700; }
+
+  /* ---- Title ---- */
+  #s-title { display: grid; place-content: center; text-align: center; }
+  #s-title .kicker { opacity: 0; transform: translateY(12px); letter-spacing: .40em;
+    text-transform: uppercase; font-size: 14px; color: #ffb454; }
+  #s-title h1 { opacity: 0; margin: 18px 0 0; font-size: 80px; font-weight: 800; letter-spacing: .02em;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: linear-gradient(180deg,#fff6e6,#ffc46b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #s-title .sub { opacity: 0; transform: translateY(12px); margin-top: 20px; font-size: 24px; color: #e6d2b0; }
+
+  /* ---- Differentiator ---- */
+  #s-pitch { display: grid; place-content: center; text-align: center; }
+  #s-pitch .rec { opacity: 0; position: relative; display: inline-block; margin: 0 auto 26px;
+    font-family: ui-monospace, Consolas, monospace; font-size: 21px; font-weight: 700; letter-spacing: .04em;
+    color: #ff8a82; padding: 11px 20px 11px 18px; border-radius: 12px;
+    background: rgba(255,94,87,.08); border: 1px solid rgba(255,94,87,.38); }
+  #s-pitch .rec .dot { color: #ff5e57; }
+  #s-pitch .rec .slash { position: absolute; left: 6%; right: 6%; top: 50%; height: 2px; transform: scaleX(0);
+    transform-origin: left center; background: #ff5e57; box-shadow: 0 0 10px #ff5e57; }
+  #s-pitch h2 { opacity: 0; margin: 0; font-size: 58px; font-weight: 800; letter-spacing: .01em;
+    background: linear-gradient(180deg,#fff6e6,#ffc46b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #s-pitch .promise { opacity: 0; transform: translateY(12px); margin-top: 22px; font-size: 24px; color: #e6d2b0; }
+  #s-pitch .promise b { color: #ffce7a; }
+
+  /* ---- Terminal centerpiece (hero #1) ---- */
+  .term { position: absolute; left: 320px; top: 176px; width: 960px; border-radius: 16px; opacity: 0;
+    background: linear-gradient(180deg, rgba(26,19,11,.97), rgba(16,12,7,.98));
+    border: 1px solid rgba(255,180,84,.22);
+    box-shadow: 0 50px 110px -34px rgba(0,0,0,.95), 0 0 70px -22px rgba(240,150,60,.32);
+    font-family: ui-monospace, "Cascadia Code", "Cascadia Mono", Consolas, monospace; }
+  .term .thead { display: flex; align-items: center; gap: 8px; padding: 13px 18px;
+    border-bottom: 1px solid rgba(255,180,84,.14); background: rgba(255,255,255,.02); }
+  .term .thead .d { width: 11px; height: 11px; border-radius: 50%; }
+  .term .thead .ttl { margin-left: 10px; font-size: 14px; color: #c9b89a; letter-spacing: .02em; }
+  .term .body { padding: 22px 26px 26px; font-size: 21px; line-height: 1.66; }
+  .term .ln { opacity: 0; white-space: pre; color: #ead9bd; }
+  .term .ln .ok { color: #8fe39a; } .term .ln .sp { color: #ffce7a; } .term .ln .mut { color: #9c8a6e; }
+  .term .ln.cmd { color: #ffce7a; font-weight: 600; }
+  .term .ln.cmd .p { color: #ff9e4d; }
+  #caret { color: #ffb454; }
+  .pbar { display: inline-block; vertical-align: middle; width: 280px; height: 12px; margin-left: 4px;
+    border-radius: 6px; background: rgba(255,180,84,.14); overflow: hidden; }
+  .pbar .fill { width: 0%; height: 100%; border-radius: 6px;
+    background: linear-gradient(90deg,#f0973a,#ffd27a); box-shadow: 0 0 14px -2px #ffb454; }
+
+  /* ---- shared SVG overlay ---- */
+  .ov { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .pcard { fill: rgba(26,19,11,.95); stroke: rgba(255,180,84,.5); stroke-width: 2; }
+  .plbl { fill: #f6e6cc; font-family: ui-monospace, Consolas, monospace; font-weight: 600; text-anchor: middle; }
+  .ploom { filter: url(#srglow); }
+
+  /* ---- Built-on / deterministic ---- */
+  #s-stack .pillars { position: absolute; left: 50%; top: 300px; transform: translateX(-50%);
+    display: flex; gap: 20px; }
+  #s-stack .pill { opacity: 0; padding: 14px 22px; border-radius: 14px; font-size: 21px; font-weight: 600;
+    color: #f6e6cc; background: rgba(26,19,11,.92); border: 1px solid rgba(255,180,84,.26);
+    box-shadow: 0 24px 60px -28px rgba(0,0,0,.85); }
+  #s-stack .pill .i { color: #ffb454; margin-right: 10px; font-weight: 800; }
+
+  /* ---- Outro / install CTA ---- */
+  #s-out { display: grid; place-content: center; text-align: center; }
+  #s-out .mark { opacity: 0; font-size: 64px; font-weight: 800; letter-spacing: .02em;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: linear-gradient(180deg,#fff6e6,#ffc46b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #s-out .sub { opacity: 0; margin-top: 16px; font-size: 22px; color: #e6d2b0; }
+  #s-out .cmd { opacity: 0; margin-top: 30px; display: inline-block;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 24px; color: #ffe9c8;
+    background: rgba(26,19,11,.94); border: 1px solid rgba(255,180,84,.4); border-radius: 14px; padding: 16px 26px;
+    box-shadow: 0 0 50px -10px rgba(240,150,60,.5); }
+  #s-out .cmd .p { color: #ff9e4d; }
+  #s-out .links2 { opacity: 0; margin-top: 24px; font-size: 16px; color: #b39d7c; letter-spacing: .02em;
+    font-family: ui-monospace, Consolas, monospace; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <div id="scrim"></div>
+
+  <svg width="0" height="0"><defs>
+    <filter id="srglow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="frameg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a1f12"/><stop offset="1" stop-color="#140e08"/>
+    </linearGradient>
+  </defs></svg>
+
+  <!-- 1 TITLE -->
+  <div class="scene" id="s-title">
+    <div class="kicker">Agent Skill · self-contained · deterministic</div>
+    <h1>sizzle-reel</h1>
+    <div class="sub">Turn any repo into a cinematic README video.</div>
+  </div>
+
+  <!-- 2 DIFFERENTIATOR -->
+  <div class="scene" id="s-pitch">
+    <span class="tag">Not a screen recording</span>
+    <div class="rec"><span class="dot">●</span> REC&nbsp;&nbsp;screen recording<span class="slash"></span></div>
+    <h2>No capture. No editing.</h2>
+    <div class="promise">Describe it once — it renders <b>deterministically</b>, identical every run.</div>
+  </div>
+
+  <!-- 3 TERMINAL (hero #1) -->
+  <div class="scene" id="s-term">
+    <span class="tag">One prompt</span>
+    <div class="term" id="termcard">
+      <div class="thead">
+        <span class="d" style="background:#ff5f57"></span><span class="d" style="background:#febc2e"></span>
+        <span class="d" style="background:#28c840"></span><span class="ttl">copilot&nbsp;—&nbsp;sizzle-reel</span>
+      </div>
+      <div class="body">
+        <div class="ln cmd" id="t-prompt"><span class="p">&gt;</span> make a sizzle reel for this project<span id="caret">&#x258b;</span></div>
+        <div class="ln" id="t-l1"><span class="ok">&#10003;</span> Inspected README — chose a <span class="sp">filmstrip backdrop + warm palette</span></div>
+        <div class="ln" id="t-l2"><span class="ok">&#10003;</span> Authored <span class="sp">6 scenes</span> on a paused GSAP timeline</div>
+        <div class="ln" id="t-l3"><span class="ok">&#10003;</span> Smoke test — 16 beats, non-black <span class="ok">&#10003;</span></div>
+        <div class="ln" id="t-l4"><span class="sp" id="spin">&#x283f;</span> Capturing <span class="sp">1500 frames</span> <span class="pbar"><span class="fill" id="pfill"></span></span></div>
+        <div class="ln" id="t-l5"><span class="ok">&#10003;</span> Encoded <span class="sp">sizzle.mp4</span> · <span class="sp">sizzle.gif</span> <span class="mut">&#8627; ready for your README</span></div>
+      </div>
+    </div>
+    <div class="lowcap" id="cap-term">Ask your agent — it <b>designs, renders, and hands you the files</b>.</div>
+  </div>
+
+  <!-- 4 MECHANISM: frames -> film (hero #2) -->
+  <div class="scene" id="s-mech">
+    <span class="tag">How it works</span>
+    <svg class="ov" id="ov-mech" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <!-- input -->
+      <g id="mech-in" opacity="0">
+        <rect x="96" y="392" width="172" height="116" rx="12" class="pcard"/>
+        <text x="182" y="436" class="plbl" font-size="19">scene.html</text>
+        <text x="182" y="466" class="plbl" font-size="14" fill="#b39d7c">paused timeline</text>
+        <text x="182" y="490" class="plbl" font-size="13" fill="#8f7e62">three.js + GSAP</text>
+      </g>
+      <text id="mech-a1" x="300" y="456" font-size="30" fill="#ffb454" text-anchor="middle" opacity="0">&#8594;</text>
+      <!-- filmstrip frames build here (dynamic) -->
+      <g id="strip"></g>
+      <!-- playhead -->
+      <rect id="playhead" x="0" y="0" width="0" height="0" fill="rgba(255,206,122,.16)" stroke="#ffd27a" stroke-width="2" rx="4" opacity="0"/>
+      <text id="mech-a2" x="1300" y="456" font-size="30" fill="#ffb454" text-anchor="middle" opacity="0">&#8594;</text>
+      <!-- outputs -->
+      <g id="out-mp4" opacity="0">
+        <rect x="1360" y="372" width="150" height="62" rx="12" class="pcard ploom"/>
+        <text x="1435" y="410" class="plbl" font-size="21">sizzle.mp4</text>
+      </g>
+      <g id="out-gif" opacity="0">
+        <rect x="1360" y="466" width="150" height="62" rx="12" class="pcard ploom"/>
+        <text x="1435" y="504" class="plbl" font-size="21">sizzle.gif</text>
+      </g>
+      <text id="ff-lbl" x="800" y="338" font-size="17" fill="#b39d7c" text-anchor="middle" opacity="0"
+        font-family="ui-monospace, Consolas, monospace">Playwright captures every frame&nbsp;&nbsp;·&nbsp;&nbsp;ffmpeg encodes</text>
+    </svg>
+    <div class="lowcap" id="cap-mech">A paused timeline, <b>seeked frame-by-frame</b> &#8594; ffmpeg &#8594; MP4 + GIF.</div>
+  </div>
+
+  <!-- 5 BUILT ON / DETERMINISTIC -->
+  <div class="scene" id="s-stack">
+    <span class="tag">Built to be reliable</span>
+    <svg class="ov" id="ov-stack" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <g id="stack-row"></g>
+    </svg>
+    <div class="pillars">
+      <div class="pill"><span class="i">&#10003;</span>Same bytes every run</div>
+      <div class="pill"><span class="i">&#10003;</span>No live backend</div>
+      <div class="pill"><span class="i">&#10003;</span>Renders offline</div>
+    </div>
+    <div class="lowcap" id="cap-stack">Pure Node, cross-platform — <b>self-contained &amp; deterministic</b>.</div>
+  </div>
+
+  <!-- 6 OUTRO / INSTALL -->
+  <div class="scene" id="s-out">
+    <div class="mark">sizzle-reel</div>
+    <div class="sub">One prompt. A cinematic README video. Across 72+ coding agents.</div>
+    <div class="cmd"><span class="p">npx</span> skills add adamhockemeyer/sizzle-reel</div>
+    <div class="links2">github.com/adamhockemeyer/sizzle-reel&nbsp;&nbsp;·&nbsp;&nbsp;Copilot CLI · Claude Code · Cursor · …</div>
+  </div>
+
+  <div id="bar-top"></div>
+  <div id="bar-bot"></div>
+</div>
+
+<script src="./vendor/gsap.min.js"></script>
+<script type="module">
+import * as THREE from "./vendor/three.module.min.js";
+
+const DURATION = 43.5;
+const CAPTURE = new URLSearchParams(location.search).has("capture");
+const SVGNS = "http://www.w3.org/2000/svg";
+
+/* ============ warm drifting-motes backdrop (film grain in the air) ============ */
+const canvas = document.getElementById("gl");
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setClearColor(0x000000, 0);
+const W = () => window.innerWidth, H = () => window.innerHeight;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setSize(W(), H());
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0c0a07, 0.05);
+const camera = new THREE.PerspectiveCamera(50, W() / H(), 0.1, 100);
+
+function dotTexture() {
+  const s = 128, c = document.createElement("canvas"); c.width = c.height = s;
+  const ctx = c.getContext("2d"), g = ctx.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);
+  g.addColorStop(0,"rgba(255,255,255,1)"); g.addColorStop(0.3,"rgba(255,255,255,0.8)");
+  g.addColorStop(1,"rgba(255,255,255,0)"); ctx.fillStyle = g; ctx.fillRect(0,0,s,s);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const tex = dotTexture();
+
+// motes drift slowly rightward (like frames flowing past) and wrap
+const DUST = 560, dpos = new Float32Array(DUST*3), dsz = new Float32Array(DUST), dseed = new Float32Array(DUST);
+for (let i=0;i<DUST;i++){
+  dpos.set([(Math.random()-0.5)*52,(Math.random()-0.5)*30,(Math.random()-0.5)*34-8], i*3);
+  dsz[i] = (Math.random()<0.10 ? 5.6 : 1.5) + Math.random()*2.6;
+  dseed[i] = Math.random();
+}
+const dgeo = new THREE.BufferGeometry();
+dgeo.setAttribute("position", new THREE.BufferAttribute(dpos,3));
+dgeo.setAttribute("aSize", new THREE.BufferAttribute(dsz,1));
+dgeo.setAttribute("aSeed", new THREE.BufferAttribute(dseed,1));
+const dustMat = new THREE.ShaderMaterial({
+  uniforms:{ uTime:{value:0}, uForm:{value:0}, uDim:{value:1}, uTex:{value:tex}, uPR:{value:renderer.getPixelRatio()} },
+  transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  vertexShader:`attribute float aSize;attribute float aSeed;uniform float uTime;uniform float uForm;uniform float uPR;varying float vF;
+    void main(){vF=uForm;vec3 p=position;
+    p.x=mod(p.x + uTime*0.55 + aSeed*52.0 + 26.0, 52.0) - 26.0;
+    p.y+=sin(uTime*0.16+aSeed*22.0)*0.55;
+    vec4 mv=modelViewMatrix*vec4(p,1.0);
+    gl_PointSize=aSize*uForm*uPR*(62.0/-mv.z);gl_Position=projectionMatrix*mv;}`,
+  fragmentShader:`uniform sampler2D uTex;uniform float uDim;varying float vF;
+    void main(){float a=texture2D(uTex,gl_PointCoord).a;if(a<0.01)discard;
+    gl_FragColor=vec4(1.0,0.70,0.34,a*vF*uDim*0.55);}`,
+});
+const dust = new THREE.Points(dgeo, dustMat); scene.add(dust);
+
+// a few sparse warm "embers" deep in the back for depth
+const EMB = 260, epos = new Float32Array(EMB*3);
+for (let i=0;i<EMB;i++){ epos.set([(Math.random()-0.5)*74,(Math.random()-0.5)*54,-12-Math.random()*42], i*3); }
+const egeo = new THREE.BufferGeometry(); egeo.setAttribute("position", new THREE.BufferAttribute(epos,3));
+const embers = new THREE.Points(egeo, new THREE.PointsMaterial({ color:0xf0973a, size:0.06, transparent:true, opacity:0.5, blending:THREE.AdditiveBlending, depthWrite:false, map:tex }));
+scene.add(embers);
+
+/* ============ build filmstrip frames (mechanism hero) ============ */
+const strip = document.getElementById("strip");
+const FRAMES = 13, FW = 70, FH = 100, GAP = 6, FX0 = 360, FY = 400;
+const stripW = FRAMES*FW + (FRAMES-1)*GAP;
+const startX = FX0 + (920 - stripW)/2;   // center the strip in the 360..1280 band
+for (let i=0;i<FRAMES;i++){
+  const x = startX + i*(FW+GAP);
+  const g = document.createElementNS(SVGNS,"g"); g.setAttribute("class","frm"); g.setAttribute("data-i",i); g.setAttribute("opacity","0");
+  // frame image area
+  const r = document.createElementNS(SVGNS,"rect");
+  r.setAttribute("x",x); r.setAttribute("y",FY-FH/2); r.setAttribute("width",FW); r.setAttribute("height",FH);
+  r.setAttribute("rx",5); r.setAttribute("fill","url(#frameg)"); r.setAttribute("stroke","rgba(255,180,84,.55)"); r.setAttribute("stroke-width","1.5");
+  g.appendChild(r);
+  // sprocket holes top + bottom
+  for (let s=0;s<2;s++){ for (let h=0;h<2;h++){
+    const hole = document.createElementNS(SVGNS,"rect");
+    hole.setAttribute("x", x + 12 + h*(FW-30)); hole.setAttribute("y", FY - FH/2 - 9 + s*(FH+4));
+    hole.setAttribute("width",10); hole.setAttribute("height",6); hole.setAttribute("rx",1.5);
+    hole.setAttribute("fill","rgba(255,180,84,.32)");
+    g.appendChild(hole);
+  }}
+  // a tiny amber "content" bar so frames don't read empty
+  const bar = document.createElementNS(SVGNS,"rect");
+  bar.setAttribute("x", x+10); bar.setAttribute("y", FY + 16 + (i%3)*4); bar.setAttribute("width", FW-20); bar.setAttribute("height", 6);
+  bar.setAttribute("rx",3); bar.setAttribute("fill","rgba(255,206,122,.5)");
+  g.appendChild(bar);
+  strip.appendChild(g);
+}
+const playhead = document.getElementById("playhead");
+playhead.setAttribute("x", startX-3); playhead.setAttribute("y", FY-FH/2-3);
+playhead.setAttribute("width", FW+6); playhead.setAttribute("height", FH+6);
+
+/* ============ build "built on" stack row (real icons if present) ============ */
+const STACK = [
+  ["three.js","./assets/threejs.svg"],
+  ["GSAP","./assets/gsap.svg"],
+  ["Playwright","./assets/playwright.svg"],
+  ["ffmpeg","./assets/ffmpeg.svg"],
+];
+const stackRow = document.getElementById("stack-row");
+const SN = STACK.length, SGAP = 250, SX0 = 800 - ((SN-1)*SGAP)/2, SY = 470;
+STACK.forEach(([name,href],i)=>{
+  const cx = SX0 + i*SGAP;
+  const g = document.createElementNS(SVGNS,"g"); g.setAttribute("class","stk"); g.setAttribute("data-i",i); g.setAttribute("opacity","0");
+  const ring = document.createElementNS(SVGNS,"rect");
+  ring.setAttribute("x",cx-58); ring.setAttribute("y",SY-58); ring.setAttribute("width",116); ring.setAttribute("height",116);
+  ring.setAttribute("rx",24); ring.setAttribute("fill","rgba(26,19,11,.92)"); ring.setAttribute("stroke","rgba(255,180,84,.3)"); ring.setAttribute("stroke-width","2");
+  g.appendChild(ring);
+  const img = document.createElementNS(SVGNS,"image");
+  img.setAttribute("href",href); img.setAttributeNS("http://www.w3.org/1999/xlink","href",href);
+  img.setAttribute("x",cx-32); img.setAttribute("y",SY-38); img.setAttribute("width",64); img.setAttribute("height",64);
+  g.appendChild(img);
+  const txt = document.createElementNS(SVGNS,"text");
+  txt.setAttribute("x",cx); txt.setAttribute("y",SY+92); txt.setAttribute("class","plbl"); txt.setAttribute("font-size","22");
+  txt.setAttribute("font-family","'Segoe UI', sans-serif");
+  txt.textContent = name;
+  g.appendChild(txt);
+  stackRow.appendChild(g);
+});
+
+/* ============ PAUSED GSAP timeline + state objects ============ */
+const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+const camState = { z:15, x:0, y:0 };
+const fx = { form:0, bars:0, dim:1, scrim:0 };
+
+// --- 1 TITLE (0 -> 4.8) ---
+tl.to(fx,{form:1,duration:2.8,ease:"power2.out"},0.2);
+tl.to(fx,{bars:1,duration:1.0},0);
+tl.to(camState,{z:10.6,duration:4.2,ease:"power1.inOut"},0);
+tl.to("#s-title .kicker",{opacity:1,y:0,duration:1.0},0.5);
+tl.to("#s-title h1",{opacity:1,duration:1.3},0.8);
+tl.fromTo("#s-title h1",{letterSpacing:"0.16em"},{letterSpacing:"0.02em",duration:1.8},0.8);
+tl.to("#s-title .sub",{opacity:1,y:0,duration:1.1},1.7);
+tl.to("#s-title",{opacity:0,duration:0.6,ease:"power2.in"},4.2);
+
+// --- 2 DIFFERENTIATOR (4.9 -> 10.0) : panel ---
+const D = 4.9;
+tl.to(fx,{dim:0.30,scrim:0.42,duration:1.0},D-0.3);
+tl.to("#s-pitch .tag",{opacity:1,duration:0.5},D+0.2);
+tl.fromTo("#s-pitch .rec",{opacity:0,y:14},{opacity:1,y:0,duration:0.6},D+0.4);
+tl.fromTo("#s-pitch .rec .slash",{scaleX:0},{scaleX:1,duration:0.5,ease:"power2.inOut"},D+1.2);
+tl.to("#s-pitch h2",{opacity:1,duration:0.8},D+1.6);
+tl.to("#s-pitch .promise",{opacity:1,y:0,duration:0.9},D+2.3);
+tl.to("#s-pitch",{opacity:0,duration:0.6,ease:"power2.in"},D+4.4);
+
+// --- 3 TERMINAL (10.2 -> 20.0) : hero #1 ---
+const T = 10.2;
+tl.to(fx,{dim:0.20,scrim:0.5,duration:0.9},T-0.3);
+tl.to("#s-term .tag",{opacity:1,duration:0.5},T+0.2);
+tl.fromTo("#termcard",{opacity:0,y:26},{opacity:1,y:0,duration:0.7,ease:"power3.out"},T+0.3);
+tl.fromTo("#t-prompt",{opacity:0},{opacity:1,duration:0.4},T+0.9);
+tl.to("#t-l1",{opacity:1,duration:0.4},T+2.0);
+tl.to("#t-l2",{opacity:1,duration:0.4},T+2.7);
+tl.to("#t-l3",{opacity:1,duration:0.4},T+3.4);
+tl.to("#t-l4",{opacity:1,duration:0.4},T+4.2);
+tl.to("#pfill",{width:"100%",duration:2.6,ease:"none"},T+4.6);
+tl.to("#spin",{opacity:0,duration:0.2},T+7.3);
+tl.to("#t-l5",{opacity:1,duration:0.45,ease:"back.out(1.4)"},T+7.4);
+tl.to("#cap-term",{opacity:1,duration:0.6},T+8.0);
+tl.to(["#s-term .tag","#termcard","#cap-term"],{opacity:0,duration:0.6,ease:"power2.in"},T+9.4);
+
+// --- 4 MECHANISM frames->film (20.6 -> 31.0) : hero #2, graph-forward ---
+const M = 20.6;
+tl.to(fx,{dim:0.66,scrim:0.2,duration:1.0},M-0.2);
+tl.to(camState,{z:12.0,duration:10.0,ease:"power1.inOut"},M);
+tl.to("#s-mech .tag",{opacity:1,duration:0.5},M+0.2);
+tl.fromTo("#mech-in",{opacity:0,x:-24},{opacity:1,x:0,duration:0.6},M+0.4);
+tl.to("#mech-a1",{opacity:1,duration:0.4},M+1.0);
+tl.to("#ff-lbl",{opacity:1,duration:0.5},M+1.2);
+// frames fly onto the strip
+tl.fromTo(".frm",{opacity:0,y:-18,scale:0.7,transformOrigin:"center center"},
+  {opacity:1,y:0,scale:1,duration:0.4,stagger:0.06,ease:"back.out(1.6)"},M+1.4);
+tl.to("#cap-mech",{opacity:1,duration:0.6},M+2.2);
+// playhead "plays" across the strip (the frames->film moment)
+tl.set("#playhead",{opacity:1},M+3.4);
+tl.fromTo("#playhead",{x:startX-3},{x:startX-3+(FRAMES-1)*(FW+GAP),duration:2.0,ease:"power1.inOut"},M+3.4);
+tl.to("#playhead",{opacity:0,duration:0.3},M+5.5);
+// converge into outputs
+tl.to("#mech-a2",{opacity:1,duration:0.4},M+5.7);
+tl.fromTo("#out-mp4",{opacity:0,x:20,scale:0.8,transformOrigin:"1435px 403px"},{opacity:1,x:0,scale:1,duration:0.5,ease:"back.out(1.5)"},M+5.9);
+tl.fromTo("#out-gif",{opacity:0,x:20,scale:0.8,transformOrigin:"1435px 497px"},{opacity:1,x:0,scale:1,duration:0.5,ease:"back.out(1.5)"},M+6.3);
+tl.to(["#s-mech .tag","#ov-mech","#cap-mech"],{opacity:0,duration:0.6,ease:"power2.in"},M+9.8);
+
+// --- 5 BUILT ON / DETERMINISTIC (31.6 -> 37.0) : panel ---
+const S = 31.6;
+tl.to(fx,{dim:0.34,scrim:0.4,duration:0.9},S-0.2);
+tl.to("#s-stack .tag",{opacity:1,duration:0.5},S+0.2);
+tl.to(".stk",{opacity:1,duration:0.5,stagger:0.12,ease:"back.out(1.4)"},S+0.4);
+tl.to(".pill",{opacity:1,duration:0.5,stagger:0.14,ease:"back.out(1.3)"},S+1.4);
+tl.to("#cap-stack",{opacity:1,duration:0.6},S+2.2);
+tl.to(["#s-stack .tag","#ov-stack",".pillars","#cap-stack"],{opacity:0,duration:0.6,ease:"power2.in"},S+4.6);
+
+// --- 6 OUTRO / INSTALL (37.8 -> 43.5) ---
+const O = 37.8;
+tl.to(fx,{dim:1,scrim:0,duration:1.2},O-0.3);
+tl.to(camState,{z:13.8,duration:4.4,ease:"power1.inOut"},O-0.3);
+tl.to("#s-out .mark",{opacity:1,duration:1.0},O+0.2);
+tl.to("#s-out .sub",{opacity:1,duration:0.9},O+0.9);
+tl.fromTo("#s-out .cmd",{opacity:0,y:14,scale:0.94},{opacity:1,y:0,scale:1,duration:0.8,ease:"back.out(1.4)"},O+1.6);
+tl.to("#s-out .links2",{opacity:1,duration:0.8},O+2.4);
+tl.to(fx,{bars:1.0,duration:0.8},O+3.0);
+
+/* ============ render — derived from state objects ============ */
+const scrimEl = document.getElementById("scrim");
+const barT = document.getElementById("bar-top"), barB = document.getElementById("bar-bot");
+const caret = document.getElementById("caret");
+const spin = document.getElementById("spin");
+const SPF = "\u280b\u2819\u2839\u2838\u283c\u2834\u2826\u2827\u2807\u280f";
+function applyState(t){
+  camera.position.set(camState.x,camState.y,camState.z);
+  camera.lookAt(0,0,0);
+  dust.rotation.z = Math.sin(t*0.05)*0.02;
+  embers.rotation.y = t*0.008;
+  dustMat.uniforms.uTime.value = t;
+  dustMat.uniforms.uForm.value = fx.form;
+  dustMat.uniforms.uDim.value = fx.dim;
+  // deterministic caret blink (only meaningful while the prompt is visible)
+  if (caret) caret.style.opacity = (Math.floor(t*1.6)%2) ? 1 : 0.12;
+  // deterministic terminal spinner glyph
+  if (spin) spin.textContent = SPF[Math.floor(t*12)%SPF.length];
+  scrimEl.style.background = `rgba(12,10,7,${fx.scrim})`;
+  const bh = fx.bars*60; barT.style.height = bh+"px"; barB.style.height = bh+"px";
+  renderer.render(scene,camera);
+}
+
+/* ============ deterministic seek harness ============ */
+window.__seek = (ms) => { const t = Math.min(Math.max(ms/1000,0),DURATION); tl.time(t); applyState(t); };
+window.__duration = DURATION;
+window.__ready = false;
+
+window.addEventListener("resize",()=>{ renderer.setSize(W(),H()); camera.aspect=W()/H(); camera.updateProjectionMatrix(); });
+
+window.__seek(0);
+requestAnimationFrame(()=>{ window.__ready = true; });
+
+if (!CAPTURE) {
+  const start = performance.now();
+  (function loop(){ const t = ((performance.now()-start)/1000) % DURATION; window.__seek(t*1000); requestAnimationFrame(loop); })();
+}
+</script>
+</body>
+</html>
